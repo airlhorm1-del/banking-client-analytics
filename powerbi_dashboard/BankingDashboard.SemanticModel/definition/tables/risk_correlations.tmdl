@@ -1,0 +1,22 @@
+table risk_correlations
+
+	column driver
+		dataType: string
+		sourceColumn: driver
+		summarizeBy: none
+
+	column correlation_with_risk
+		dataType: double
+		formatString: 0.000
+		sourceColumn: correlation_with_risk
+		summarizeBy: none
+
+	partition risk_correlations = m
+		mode: import
+		source =
+				let
+					Source = Csv.Document(File.Contents("C:\Users\user\OneDrive\Desktop\banking-client-analytics\clean\risk_correlations.csv"),[Delimiter=",", Columns=2, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+					#"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+					#"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"driver", type text}, {"correlation_with_risk", type number}})
+				in
+					#"Changed Type"

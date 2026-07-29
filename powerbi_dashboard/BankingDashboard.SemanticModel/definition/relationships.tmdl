@@ -1,0 +1,3 @@
+relationship banking_clients_to_dim_date
+	fromColumn: banking_clients.joined_bank_date
+	toColumn: dim_date_banking.date

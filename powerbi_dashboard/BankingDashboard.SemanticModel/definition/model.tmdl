@@ -1,0 +1,10 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-US
+
+ref table banking_clients
+ref table risk_correlations
+ref table dim_date_banking
+
+ref relationship banking_clients_to_dim_date

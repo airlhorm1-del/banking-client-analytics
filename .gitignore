@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Power BI Desktop local cache/lock files
+powerbi_dashboard/**/.pbi/
+powerbi_dashboard/**/*.tmp
+~$*
+
+# Editor / local tooling config (not relevant to the project itself)
+.vscode/
+.claude/

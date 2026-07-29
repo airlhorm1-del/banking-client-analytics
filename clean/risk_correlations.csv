@@ -1,0 +1,13 @@
+driver,correlation_with_risk
+estimated_income,0.6647261466555814
+superannuation_savings,0.4996403577507157
+bank_loans,0.42182444082114323
+business_lending,0.41787492030135304
+foreign_currency_account,0.4018720713177122
+credit_card_balance,0.3996936496519741
+checking_accounts,0.37307637481589156
+saving_accounts,0.3473580149127024
+bank_deposits,0.3454117880009999
+properties_owned,0.0034868861484703834
+age,-0.0011976740814942214
+amount_of_credit_cards,-0.02737845361354285
