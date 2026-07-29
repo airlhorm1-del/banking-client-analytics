@@ -65,11 +65,15 @@ dates, 100% ID-pattern match, 0 whitespace/casing issues post-cleaning.
 
 ## Interactive Power BI dashboard
 
-Project: `powerbi_dashboard/BankingDashboard.pbip` — semantic model, relationships,
-and 16 DAX measures are pre-built as version-controlled TMDL files; the report
-visuals were then hand-built in Power BI Desktop across 4 pages, all
-cross-filtering: clicking any chart or slicer updates every other visual on
-that page automatically.
+**Open `powerbi_dashboard/BankingDashboard.pbix` in Power BI Desktop** to use
+the actual dashboard — 4 pages, all cross-filtering: clicking any chart or
+slicer updates every other visual on that page automatically.
+
+`powerbi_dashboard/BankingDashboard.pbip` (the folder of `.tmdl`/`.json` files
+alongside it) is the underlying semantic model — tables, relationships, and 16
+DAX measures — kept as version-controlled, human-readable text rather than
+buried in a binary file. It's included for transparency into how the data
+model and measures were built; the `.pbix` is the one to actually open.
 
 **Overview** — relationship-type breakdown and 12 KPI cards covering every product line at a glance.
 ![Overview](powerbi_dashboard/screenshots/01_overview.png)
