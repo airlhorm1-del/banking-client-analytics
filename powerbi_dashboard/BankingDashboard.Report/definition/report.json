@@ -59,6 +59,26 @@
           "name": "bank9609531559429151.png",
           "path": "bank9609531559429151.png",
           "type": "Image"
+        },
+        {
+          "name": "01_Overview_background.png",
+          "path": "01_Overview_background.png",
+          "type": "Image"
+        },
+        {
+          "name": "02_Wealth_background.png",
+          "path": "02_Wealth_background.png",
+          "type": "Image"
+        },
+        {
+          "name": "03_Advisors_background.png",
+          "path": "03_Advisors_background.png",
+          "type": "Image"
+        },
+        {
+          "name": "04_Risk_background.png",
+          "path": "04_Risk_background.png",
+          "type": "Image"
         }
       ]
     }
