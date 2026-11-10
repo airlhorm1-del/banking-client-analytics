@@ -48,6 +48,21 @@ table banking_clients
 	measure 'Total Superannuation (All Clients)' = CALCULATE(SUM(banking_clients[superannuation_savings]), ALL(banking_clients))
 		formatString: #,##0.00
 
+	measure 'Top 20% Share' = CALCULATE([Share of Total Value], banking_clients[value_quintile] = "Top 20%")
+		formatString: 0.0%
+
+	measure 'High Risk Clients %' = DIVIDE(CALCULATE([Total Clients], banking_clients[risk_weighting] >= 4), [Total Clients])
+		formatString: 0.0%
+
+	measure 'High Risk Value' = CALCULATE([Total Relationship Value], banking_clients[risk_weighting] >= 4)
+		formatString: #,##0.00
+
+	measure 'Clients With All 6 Products %' = DIVIDE(CALCULATE([Total Clients], banking_clients[product_count] = 6), [Total Clients])
+		formatString: 0.0%
+
+	measure 'Advisor Count' = DISTINCTCOUNT(banking_clients[investment_advisor])
+		formatString: #,##0
+
 	column client_row_id
 		dataType: int64
 		formatString: #,##0
