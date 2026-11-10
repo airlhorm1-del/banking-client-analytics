@@ -40,6 +40,26 @@ table banking_clients
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
+	measure 'Top 20% Share' = CALCULATE([Share of Total Value], banking_clients[value_quintile] = "Top 20%")
+		formatString: 0.0%
+		lineageTag: b62ce558-83a8-48d8-aeab-04965618b382
+
+	measure 'High Risk Clients %' = DIVIDE(CALCULATE([Total Clients], banking_clients[risk_weighting] >= 4), [Total Clients])
+		formatString: 0.0%
+		lineageTag: 1501b934-9c88-4a39-8039-db80a4e4dcee
+
+	measure 'High Risk Value' = CALCULATE([Total Relationship Value], banking_clients[risk_weighting] >= 4)
+		formatString: #,##0.00
+		lineageTag: 0b841079-0f49-496c-9aeb-49548ceb2139
+
+	measure 'Clients With All 6 Products %' = DIVIDE(CALCULATE([Total Clients], banking_clients[product_count] = 6), [Total Clients])
+		formatString: 0.0%
+		lineageTag: 3fe3916f-01ad-4208-b57f-c4898de7292d
+
+	measure 'Advisor Count' = DISTINCTCOUNT(banking_clients[investment_advisor])
+		formatString: #,##0
+		lineageTag: e7b2cf03-2cb4-49fd-8c19-b4f50b1895ea
+
 	column client_row_id
 		dataType: int64
 		formatString: 0
