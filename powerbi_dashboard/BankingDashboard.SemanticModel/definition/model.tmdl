@@ -1,10 +1,22 @@
 model Model
-	culture: en-US
+	culture: en-GB
 	defaultPowerBIDataSourceVersion: powerBI_V3
-	sourceQueryCulture: en-US
+	sourceQueryCulture: en-GB
+	valueFilterBehavior: independent
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_QueryOrder = ["banking_clients","risk_correlations"]
+
+annotation PBI_ProTooling = ["DevMode"]
 
 ref table banking_clients
+ref table DateTableTemplate_7e5875c5-3d54-4080-bbd3-34126ece217b
+ref table LocalDateTable_a0474e05-4aad-4989-b2d0-ef7105cd81b3
 ref table risk_correlations
-ref table dim_date_banking
 
-ref relationship banking_clients_to_dim_date
+ref cultureInfo en-GB
+

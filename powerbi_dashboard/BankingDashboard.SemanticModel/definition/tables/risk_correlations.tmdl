@@ -1,22 +1,33 @@
 table risk_correlations
+	lineageTag: 90815c2e-e5b3-4e4e-985e-13f7f3b3121f
 
 	column driver
 		dataType: string
-		sourceColumn: driver
+		lineageTag: e0b14a8d-39bf-4cb3-a928-1236cd648e05
 		summarizeBy: none
+		sourceColumn: driver
+
+		annotation SummarizationSetBy = Automatic
 
 	column correlation_with_risk
 		dataType: double
-		formatString: 0.000
+		lineageTag: b86accdd-79c7-4e1b-bb17-a90e4a02e76e
+		summarizeBy: sum
 		sourceColumn: correlation_with_risk
-		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	partition risk_correlations = m
 		mode: import
 		source =
 				let
-					Source = Csv.Document(File.Contents("C:\Users\user\OneDrive\Desktop\banking-client-analytics\clean\risk_correlations.csv"),[Delimiter=",", Columns=2, Encoding=65001, QuoteStyle=QuoteStyle.None]),
-					#"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
-					#"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"driver", type text}, {"correlation_with_risk", type number}})
+				    Source = Csv.Document(File.Contents("C:\Users\user\OneDrive\Desktop\DATA ANALYTICS AI\clean\risk_correlations.csv"),[Delimiter=",", Columns=2, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"driver", type text}, {"correlation_with_risk", type number}})
 				in
-					#"Changed Type"
+				    #"Changed Type"
+
+	annotation PBI_ResultType = Table
+

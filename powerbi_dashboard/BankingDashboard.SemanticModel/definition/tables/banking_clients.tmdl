@@ -1,243 +1,344 @@
 table banking_clients
+	lineageTag: fc671e6d-95d1-4f00-9d26-b4a4dbab74ba
 
 	measure 'Total Clients' = COUNTROWS(banking_clients)
-		formatString: #,##0
+		formatString: 0
+		lineageTag: 0ef0345b-de23-418d-8efa-99c70284ab53
 
 	measure 'Total Relationship Value' = SUM(banking_clients[total_relationship_value])
-		formatString: #,##0.00
+		lineageTag: 3e93ad5e-831c-4f65-b241-e7121ec97aa1
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	measure 'Avg Relationship Value' = AVERAGE(banking_clients[total_relationship_value])
-		formatString: #,##0.00
+		lineageTag: df3accfa-8eeb-4c65-9be8-44dce946f4c2
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	measure 'Avg Risk Weighting' = AVERAGE(banking_clients[risk_weighting])
-		formatString: #,##0.0
+		lineageTag: 3b1face0-6af4-4fae-a43b-cbab6c38ed64
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	measure 'Avg Estimated Income' = AVERAGE(banking_clients[estimated_income])
-		formatString: #,##0.00
+		lineageTag: cc7baea9-e7f0-4c4a-af22-fe54af77ee8b
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	measure 'Avg Products Held' = AVERAGE(banking_clients[product_count])
-		formatString: #,##0.0
+		lineageTag: 894ad79c-c167-4f74-b1d6-306d69b642ee
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	measure 'Avg Products per 100K Income' = AVERAGE(banking_clients[products_per_100k_income])
-		formatString: #,##0.00
+		lineageTag: 05e968d5-57e5-4d5c-a84f-d44c5922a706
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	measure 'Share of Total Value' = DIVIDE([Total Relationship Value], CALCULATE([Total Relationship Value], ALL(banking_clients)))
-		formatString: 0.0%
+		lineageTag: 1d3625e2-ae29-4b82-a318-205831c4fe4c
 
-	measure 'Total Deposits (All Clients)' = CALCULATE(SUM(banking_clients[bank_deposits]), ALL(banking_clients))
-		formatString: #,##0.00
-
-	measure 'Total Loans (All Clients)' = CALCULATE(SUM(banking_clients[bank_loans]), ALL(banking_clients))
-		formatString: #,##0.00
-
-	measure 'Total Checking (All Clients)' = CALCULATE(SUM(banking_clients[checking_accounts]), ALL(banking_clients))
-		formatString: #,##0.00
-
-	measure 'Total Savings (All Clients)' = CALCULATE(SUM(banking_clients[saving_accounts]), ALL(banking_clients))
-		formatString: #,##0.00
-
-	measure 'Total Business Lending (All Clients)' = CALCULATE(SUM(banking_clients[business_lending]), ALL(banking_clients))
-		formatString: #,##0.00
-
-	measure 'Total Credit Card Balance (All Clients)' = CALCULATE(SUM(banking_clients[credit_card_balance]), ALL(banking_clients))
-		formatString: #,##0.00
-
-	measure 'Total Foreign Currency (All Clients)' = CALCULATE(SUM(banking_clients[foreign_currency_account]), ALL(banking_clients))
-		formatString: #,##0.00
-
-	measure 'Total Superannuation (All Clients)' = CALCULATE(SUM(banking_clients[superannuation_savings]), ALL(banking_clients))
-		formatString: #,##0.00
-
-	measure 'Top 20% Share' = CALCULATE([Share of Total Value], banking_clients[value_quintile] = "Top 20%")
-		formatString: 0.0%
-
-	measure 'High Risk Clients %' = DIVIDE(CALCULATE([Total Clients], banking_clients[risk_weighting] >= 4), [Total Clients])
-		formatString: 0.0%
-
-	measure 'High Risk Value' = CALCULATE([Total Relationship Value], banking_clients[risk_weighting] >= 4)
-		formatString: #,##0.00
-
-	measure 'Clients With All 6 Products %' = DIVIDE(CALCULATE([Total Clients], banking_clients[product_count] = 6), [Total Clients])
-		formatString: 0.0%
-
-	measure 'Advisor Count' = DISTINCTCOUNT(banking_clients[investment_advisor])
-		formatString: #,##0
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	column client_row_id
 		dataType: int64
-		formatString: #,##0
+		formatString: 0
+		lineageTag: 5105c685-2afa-4691-b737-1f559b813ca6
+		summarizeBy: sum
 		sourceColumn: client_row_id
-		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
 
 	column client_id
 		dataType: string
-		sourceColumn: client_id
+		lineageTag: ef768671-f207-4275-8991-01bdb9ae5d55
 		summarizeBy: none
+		sourceColumn: client_id
+
+		annotation SummarizationSetBy = Automatic
 
 	column name
 		dataType: string
-		sourceColumn: name
+		lineageTag: a597ee15-1442-4743-a4d4-44918b4193e9
 		summarizeBy: none
+		sourceColumn: name
+
+		annotation SummarizationSetBy = Automatic
 
 	column age
 		dataType: int64
-		formatString: #,##0
+		formatString: 0
+		lineageTag: 260d7a38-4d49-4463-b0be-3e323701c0b0
+		summarizeBy: sum
 		sourceColumn: age
-		summarizeBy: average
+
+		annotation SummarizationSetBy = Automatic
 
 	column location_id
 		dataType: int64
-		formatString: #,##0
+		formatString: 0
+		lineageTag: 2481b864-e11f-49f2-9bf2-9ae219caa0a1
+		summarizeBy: sum
 		sourceColumn: location_id
-		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
 
 	column joined_bank_date
 		dataType: dateTime
-		formatString: Short Date
-		sourceColumn: joined_bank_date
+		formatString: Long Date
+		lineageTag: 6fa4fb8f-2c75-48a1-946d-682099132675
 		summarizeBy: none
+		sourceColumn: joined_bank_date
+
+		variation Variation
+			isDefault
+			relationship: 87328817-a27d-4abf-b3b2-3a97827f8d1a
+			defaultHierarchy: LocalDateTable_a0474e05-4aad-4989-b2d0-ef7105cd81b3.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
 
 	column banking_contact
 		dataType: string
-		sourceColumn: banking_contact
+		lineageTag: 40e1e7e6-eeb1-43c0-bd4f-2a3f89cc6f53
 		summarizeBy: none
+		sourceColumn: banking_contact
+
+		annotation SummarizationSetBy = Automatic
 
 	column nationality
 		dataType: string
-		sourceColumn: nationality
+		lineageTag: 69e19274-dcd4-4ed5-af84-2d640edb7d7e
 		summarizeBy: none
+		sourceColumn: nationality
+
+		annotation SummarizationSetBy = Automatic
 
 	column occupation
 		dataType: string
-		sourceColumn: occupation
+		lineageTag: c16057fc-c7b8-4908-95a7-ba0185950104
 		summarizeBy: none
+		sourceColumn: occupation
+
+		annotation SummarizationSetBy = Automatic
 
 	column fee_structure
 		dataType: string
-		sourceColumn: fee_structure
+		lineageTag: e2fce153-33cf-4a42-b778-2ca737caed09
 		summarizeBy: none
+		sourceColumn: fee_structure
+
+		annotation SummarizationSetBy = Automatic
 
 	column loyalty_classification
 		dataType: string
-		sourceColumn: loyalty_classification
+		lineageTag: b2e89c9a-c2e3-401d-b079-ece1d0b27f93
 		summarizeBy: none
+		sourceColumn: loyalty_classification
+
+		annotation SummarizationSetBy = Automatic
 
 	column estimated_income
 		dataType: double
-		formatString: #,##0.00
+		lineageTag: 8e099aaf-7641-40e8-8f09-cb845e261389
+		summarizeBy: sum
 		sourceColumn: estimated_income
-		summarizeBy: average
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	column superannuation_savings
 		dataType: double
-		formatString: #,##0.00
-		sourceColumn: superannuation_savings
+		lineageTag: 26876520-ceb8-4d32-94b3-98d34853e2de
 		summarizeBy: sum
+		sourceColumn: superannuation_savings
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	column amount_of_credit_cards
 		dataType: int64
-		formatString: #,##0
+		formatString: 0
+		lineageTag: 6a0996e1-d4a8-40ee-92fc-55eb0bcd789f
+		summarizeBy: sum
 		sourceColumn: amount_of_credit_cards
-		summarizeBy: average
+
+		annotation SummarizationSetBy = Automatic
 
 	column credit_card_balance
 		dataType: double
-		formatString: #,##0.00
-		sourceColumn: credit_card_balance
+		lineageTag: 66600945-b849-49f9-ad4f-aa2f98d1cd09
 		summarizeBy: sum
+		sourceColumn: credit_card_balance
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	column bank_loans
 		dataType: double
-		formatString: #,##0.00
-		sourceColumn: bank_loans
+		lineageTag: 9d134efa-fa0f-400d-bf8e-8cb8b5af07b0
 		summarizeBy: sum
+		sourceColumn: bank_loans
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	column bank_deposits
 		dataType: double
-		formatString: #,##0.00
-		sourceColumn: bank_deposits
+		lineageTag: 0d468430-4bec-4bfe-ad7e-f030dc42f24c
 		summarizeBy: sum
+		sourceColumn: bank_deposits
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	column checking_accounts
 		dataType: double
-		formatString: #,##0.00
-		sourceColumn: checking_accounts
+		lineageTag: 17110fa6-ecfa-48c8-b703-522812c764fe
 		summarizeBy: sum
+		sourceColumn: checking_accounts
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	column saving_accounts
 		dataType: double
-		formatString: #,##0.00
-		sourceColumn: saving_accounts
+		lineageTag: 10e67620-8140-493d-8559-13ed4a90cdd9
 		summarizeBy: sum
+		sourceColumn: saving_accounts
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	column foreign_currency_account
 		dataType: double
-		formatString: #,##0.00
-		sourceColumn: foreign_currency_account
+		lineageTag: 25d7e56d-403c-40be-ab84-0cab2ad461c7
 		summarizeBy: sum
+		sourceColumn: foreign_currency_account
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	column business_lending
 		dataType: double
-		formatString: #,##0.00
-		sourceColumn: business_lending
+		lineageTag: baf60ecf-125b-4659-828d-84f4f71d5f71
 		summarizeBy: sum
+		sourceColumn: business_lending
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	column properties_owned
 		dataType: int64
-		formatString: #,##0
+		formatString: 0
+		lineageTag: 983a9171-7ede-4ba8-bd03-2a9122cdab5c
+		summarizeBy: sum
 		sourceColumn: properties_owned
-		summarizeBy: average
+
+		annotation SummarizationSetBy = Automatic
 
 	column risk_weighting
 		dataType: int64
-		formatString: #,##0
+		formatString: 0
+		lineageTag: 287168ab-a655-40fd-bfac-d13bb183e093
+		summarizeBy: sum
 		sourceColumn: risk_weighting
-		summarizeBy: average
+
+		annotation SummarizationSetBy = Automatic
 
 	column banking_relationship
 		dataType: string
-		sourceColumn: banking_relationship
+		lineageTag: c8ca8030-9ef1-492a-8323-a31229f194c1
 		summarizeBy: none
+		sourceColumn: banking_relationship
+
+		annotation SummarizationSetBy = Automatic
 
 	column gender
 		dataType: string
-		sourceColumn: gender
+		lineageTag: da4b3fd6-9788-4797-85a4-1dddd2d37cb8
 		summarizeBy: none
+		sourceColumn: gender
+
+		annotation SummarizationSetBy = Automatic
 
 	column investment_advisor
 		dataType: string
-		sourceColumn: investment_advisor
+		lineageTag: 71d0c35f-363e-4bc3-801f-54b549f77c53
 		summarizeBy: none
+		sourceColumn: investment_advisor
+
+		annotation SummarizationSetBy = Automatic
 
 	column total_relationship_value
 		dataType: double
-		formatString: #,##0.00
-		sourceColumn: total_relationship_value
+		lineageTag: d1a1413e-a699-485d-8c06-f36dfa90236e
 		summarizeBy: sum
+		sourceColumn: total_relationship_value
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	column value_quintile
 		dataType: string
-		sourceColumn: value_quintile
+		lineageTag: 45564f17-b7b7-4341-94e3-9f6462233ab5
 		summarizeBy: none
+		sourceColumn: value_quintile
+
+		annotation SummarizationSetBy = Automatic
 
 	column product_count
 		dataType: int64
-		formatString: #,##0
+		formatString: 0
+		lineageTag: a61d0860-b9fd-4b95-9d28-5d07f4caa43f
+		summarizeBy: sum
 		sourceColumn: product_count
-		summarizeBy: average
+
+		annotation SummarizationSetBy = Automatic
 
 	column products_per_100k_income
 		dataType: double
-		formatString: #,##0.00
+		lineageTag: 4457a86d-ea94-4304-9e0d-0f6b97db75ce
+		summarizeBy: sum
 		sourceColumn: products_per_100k_income
-		summarizeBy: average
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Age Band' =
+			
+			SWITCH(
+			    TRUE(),
+			    'banking_clients'[age] < 35, "Under 35",
+			    'banking_clients'[age] <= 59, "35–59",
+			    "60+"
+			)
+		lineageTag: 29f509f5-4f0b-49f0-b3f4-4d3066c952f8
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
 
 	partition banking_clients = m
 		mode: import
 		source =
 				let
-					Source = Csv.Document(File.Contents("C:\Users\user\OneDrive\Desktop\banking-client-analytics\clean\banking_data_powerbi.csv"),[Delimiter=",", Columns=30, Encoding=65001, QuoteStyle=QuoteStyle.None]),
-					#"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
-					#"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"client_row_id", Int64.Type}, {"client_id", type text}, {"name", type text}, {"age", Int64.Type}, {"location_id", Int64.Type}, {"joined_bank_date", type date}, {"banking_contact", type text}, {"nationality", type text}, {"occupation", type text}, {"fee_structure", type text}, {"loyalty_classification", type text}, {"estimated_income", type number}, {"superannuation_savings", type number}, {"amount_of_credit_cards", Int64.Type}, {"credit_card_balance", type number}, {"bank_loans", type number}, {"bank_deposits", type number}, {"checking_accounts", type number}, {"saving_accounts", type number}, {"foreign_currency_account", type number}, {"business_lending", type number}, {"properties_owned", Int64.Type}, {"risk_weighting", Int64.Type}, {"banking_relationship", type text}, {"gender", type text}, {"investment_advisor", type text}, {"total_relationship_value", type number}, {"value_quintile", type text}, {"product_count", Int64.Type}, {"products_per_100k_income", type number}})
+				    Source = Csv.Document(File.Contents("C:\Users\user\OneDrive\Desktop\DATA ANALYTICS AI\clean\banking_data_powerbi.csv"),[Delimiter=",", Columns=30, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"client_row_id", Int64.Type}, {"client_id", type text}, {"name", type text}, {"age", Int64.Type}, {"location_id", Int64.Type}, {"joined_bank_date", type date}, {"banking_contact", type text}, {"nationality", type text}, {"occupation", type text}, {"fee_structure", type text}, {"loyalty_classification", type text}, {"estimated_income", type number}, {"superannuation_savings", type number}, {"amount_of_credit_cards", Int64.Type}, {"credit_card_balance", type number}, {"bank_loans", type number}, {"bank_deposits", type number}, {"checking_accounts", type number}, {"saving_accounts", type number}, {"foreign_currency_account", type number}, {"business_lending", type number}, {"properties_owned", Int64.Type}, {"risk_weighting", Int64.Type}, {"banking_relationship", type text}, {"gender", type text}, {"investment_advisor", type text}, {"total_relationship_value", type number}, {"value_quintile", type text}, {"product_count", Int64.Type}, {"products_per_100k_income", type number}})
 				in
-					#"Changed Type"
+				    #"Changed Type"
+
+	annotation PBI_ResultType = Table
+

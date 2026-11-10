@@ -1,3 +1,5 @@
-relationship banking_clients_to_dim_date
+relationship 87328817-a27d-4abf-b3b2-3a97827f8d1a
+	joinOnDateBehavior: datePartOnly
 	fromColumn: banking_clients.joined_bank_date
-	toColumn: dim_date_banking.date
+	toColumn: LocalDateTable_a0474e05-4aad-4989-b2d0-ef7105cd81b3.Date
+

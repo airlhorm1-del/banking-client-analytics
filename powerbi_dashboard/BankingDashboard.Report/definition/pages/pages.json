@@ -1,5 +1,10 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/pagesMetadata/1.0.0/schema.json",
-  "pageOrder": ["Overview", "Wealth_and_CrossSell", "Relationship_and_Advisor_Value", "Risk_Drivers"],
-  "activePageName": "Overview"
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/pagesMetadata/1.1.0/schema.json",
+  "pageOrder": [
+    "6abdf64baed257d60b90",
+    "b7394d148872655d5ac0",
+    "9380228668638e78207e",
+    "93b82335099ea500518a"
+  ],
+  "activePageName": "6abdf64baed257d60b90"
 }
