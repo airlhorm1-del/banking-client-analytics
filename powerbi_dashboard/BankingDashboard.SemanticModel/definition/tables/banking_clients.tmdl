@@ -60,6 +60,52 @@ table banking_clients
 		formatString: #,##0
 		lineageTag: e7b2cf03-2cb4-49fd-8c19-b4f50b1895ea
 
+	measure 'Quintile List HTML' =
+			-- HTML for the HTML Content visual in the gold card: one white row per value quintile
+			-- with a gold dot (filled for Top 20%), its label and its share of relationship value.
+			-- Shares use the current selection (slicers still apply), so the 5 rows add up to 100%.
+			VAR _total =
+			    CALCULATE ( [Total Relationship Value], REMOVEFILTERS ( banking_clients[value_quintile] ) )
+			VAR _quintiles =
+			    DATATABLE (
+			        "Quintile", STRING,
+			        "Label", STRING,
+			        "Order", INTEGER,
+			        {
+			            { "Top 20%", "Top 20%", 1 },
+			            { "4th", "4th quintile", 2 },
+			            { "3rd", "3rd quintile", 3 },
+			            { "2nd", "2nd quintile", 4 },
+			            { "Bottom 20%", "Bottom 20%", 5 }
+			        }
+			    )
+			VAR _rows =
+			    CONCATENATEX (
+			        _quintiles,
+			        VAR _q = [Quintile]
+			        VAR _share =
+			            DIVIDE (
+			                CALCULATE ( [Total Relationship Value], banking_clients[value_quintile] = _q ),
+			                _total
+			            )
+			        VAR _dotFill = IF ( [Order] = 1, "#A8894A", "#FFFFFF" )
+			        VAR _gap = IF ( [Order] = 5, "0", "10px" )
+			        RETURN
+			            "<div style=""display:flex;align-items:center;box-sizing:border-box;height:28px;margin-bottom:" & _gap
+			                & ";padding:0 14px;background:#FFFFFF;border-radius:8px;"">"
+			                & "<span style=""display:inline-block;box-sizing:border-box;width:13px;height:13px;border-radius:50%;border:1.5px solid #A8894A;background:"
+			                & _dotFill & ";""></span>"
+			                & "<span style=""margin-left:12px;font-size:12px;font-weight:500;"">" & [Label] & "</span>"
+			                & "<span style=""margin-left:auto;font-size:12px;font-weight:700;"">"
+			                & FORMAT ( COALESCE ( _share, 0 ), "0.0%" ) & "</span>"
+			                & "</div>",
+			        "",
+			        [Order], ASC
+			    )
+			RETURN
+			    "<div style=""font-family:'Plus Jakarta Sans','Segoe UI',sans-serif;color:#17140F;"">" & _rows & "</div>"
+		lineageTag: c8e3a8b6-3302-43ce-b0a6-42ade7f237a6
+
 	column client_row_id
 		dataType: int64
 		formatString: 0
