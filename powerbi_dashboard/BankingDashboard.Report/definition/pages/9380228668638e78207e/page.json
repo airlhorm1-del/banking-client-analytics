@@ -3,7 +3,7 @@
   "name": "9380228668638e78207e",
   "displayName": "Advisors",
   "displayOption": "FitToPage",
-  "height": 720,
+  "height": 1008,
   "width": 1280,
   "objects": {
     "background": [
@@ -25,7 +25,7 @@
               "name": {
                 "expr": {
                   "Literal": {
-                    "Value": "'03_Advisors_background.png'"
+                    "Value": "'bg_03_advisors.png'"
                   }
                 }
               },
@@ -34,7 +34,7 @@
                   "ResourcePackageItem": {
                     "PackageName": "RegisteredResources",
                     "PackageType": 1,
-                    "ItemName": "03_Advisors_background.png"
+                    "ItemName": "bg_03_advisors.png"
                   }
                 }
               },

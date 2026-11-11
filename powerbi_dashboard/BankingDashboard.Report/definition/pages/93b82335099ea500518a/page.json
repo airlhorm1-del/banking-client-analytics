@@ -3,7 +3,7 @@
   "name": "93b82335099ea500518a",
   "displayName": "Risk Drivers",
   "displayOption": "FitToPage",
-  "height": 720,
+  "height": 1008,
   "width": 1280,
   "objects": {
     "background": [
@@ -25,7 +25,7 @@
               "name": {
                 "expr": {
                   "Literal": {
-                    "Value": "'04_Risk_background.png'"
+                    "Value": "'bg_04_risk.png'"
                   }
                 }
               },
@@ -34,7 +34,7 @@
                   "ResourcePackageItem": {
                     "PackageName": "RegisteredResources",
                     "PackageType": 1,
-                    "ItemName": "04_Risk_background.png"
+                    "ItemName": "bg_04_risk.png"
                   }
                 }
               },

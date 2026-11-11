@@ -1,0 +1,168 @@
+{
+  "name": "Elom Gold Ivory",
+  "dataColors": [
+    "#17140F",
+    "#C9A45C",
+    "#E6D4AC",
+    "#B08A3E",
+    "#7A5A1E",
+    "#8C8478",
+    "#D9BC7E",
+    "#4A4337"
+  ],
+  "background": "#FFFFFF",
+  "foreground": "#17140F",
+  "tableAccent": "#C9A45C",
+  "good": "#2F7A4A",
+  "neutral": "#C9A45C",
+  "bad": "#9B3B2E",
+  "textClasses": {
+    "callout": {
+      "fontSize": 28,
+      "fontFace": "'Plus Jakarta Sans SemiBold', 'Segoe UI Semibold', wf_segoe-ui_semibold, helvetica, arial, sans-serif",
+      "color": "#17140F"
+    },
+    "title": {
+      "fontSize": 13,
+      "fontFace": "'Plus Jakarta Sans SemiBold', 'Segoe UI Semibold', wf_segoe-ui_semibold, helvetica, arial, sans-serif",
+      "color": "#17140F"
+    },
+    "header": {
+      "fontSize": 12,
+      "fontFace": "'Plus Jakarta Sans SemiBold', 'Segoe UI Semibold', wf_segoe-ui_semibold, helvetica, arial, sans-serif",
+      "color": "#17140F"
+    },
+    "label": {
+      "fontSize": 10,
+      "fontFace": "'Plus Jakarta Sans', 'Segoe UI', wf_segoe-ui_normal, helvetica, arial, sans-serif",
+      "color": "#4A4337"
+    }
+  },
+  "visualStyles": {
+    "*": {
+      "*": {
+        "background": [
+          {
+            "show": false,
+            "transparency": 100
+          }
+        ],
+        "border": [
+          {
+            "show": false
+          }
+        ],
+        "dropShadow": [
+          {
+            "show": false
+          }
+        ],
+        "visualHeader": [
+          {
+            "show": false
+          }
+        ],
+        "title": [
+          {
+            "show": true,
+            "fontColor": {
+              "solid": {
+                "color": "#17140F"
+              }
+            },
+            "fontSize": 13,
+            "fontFamily": "'Plus Jakarta Sans SemiBold', 'Segoe UI Semibold', wf_segoe-ui_semibold, helvetica, arial, sans-serif",
+            "alignment": "left"
+          }
+        ],
+        "categoryAxis": [
+          {
+            "gridlineShow": false,
+            "showAxisTitle": false,
+            "labelColor": {
+              "solid": {
+                "color": "#4A4337"
+              }
+            }
+          }
+        ],
+        "valueAxis": [
+          {
+            "gridlineShow": false,
+            "showAxisTitle": false,
+            "labelColor": {
+              "solid": {
+                "color": "#4A4337"
+              }
+            }
+          }
+        ],
+        "labels": [
+          {
+            "color": {
+              "solid": {
+                "color": "#17140F"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "page": {
+      "*": {
+        "background": [
+          {
+            "transparency": 0
+          }
+        ],
+        "outspace": [
+          {
+            "color": {
+              "solid": {
+                "color": "#E9E3D7"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "card": {
+      "*": {
+        "labels": [
+          {
+            "color": {
+              "solid": {
+                "color": "#17140F"
+              }
+            },
+            "fontSize": 26,
+            "fontFamily": "'Plus Jakarta Sans SemiBold', 'Segoe UI Semibold', wf_segoe-ui_semibold, helvetica, arial, sans-serif"
+          }
+        ],
+        "categoryLabels": [
+          {
+            "show": false
+          }
+        ]
+      }
+    },
+    "slicer": {
+      "*": {
+        "items": [
+          {
+            "fontColor": {
+              "solid": {
+                "color": "#3B352C"
+              }
+            },
+            "background": {
+              "solid": {
+                "color": "#F6F4EF"
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

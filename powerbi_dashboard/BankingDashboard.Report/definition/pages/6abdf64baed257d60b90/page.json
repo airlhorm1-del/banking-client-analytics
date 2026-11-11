@@ -3,7 +3,7 @@
   "name": "6abdf64baed257d60b90",
   "displayName": "Overview",
   "displayOption": "FitToPage",
-  "height": 720,
+  "height": 1008,
   "width": 1280,
   "objects": {
     "background": [
@@ -25,7 +25,7 @@
               "name": {
                 "expr": {
                   "Literal": {
-                    "Value": "'01_Overview_background.png'"
+                    "Value": "'bg_01_overview.png'"
                   }
                 }
               },
@@ -34,7 +34,7 @@
                   "ResourcePackageItem": {
                     "PackageName": "RegisteredResources",
                     "PackageType": 1,
-                    "ItemName": "01_Overview_background.png"
+                    "ItemName": "bg_01_overview.png"
                   }
                 }
               },

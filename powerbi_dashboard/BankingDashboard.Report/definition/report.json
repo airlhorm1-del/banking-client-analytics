@@ -9,6 +9,15 @@
         "page": "2.3.1"
       },
       "type": "SharedResources"
+    },
+    "customTheme": {
+      "name": "GoldIvory_PlusJakarta_theme.json",
+      "reportVersionAtImport": {
+        "visual": "2.11.0",
+        "report": "3.4.0",
+        "page": "2.3.1"
+      },
+      "type": "RegisteredResources"
     }
   },
   "objects": {
@@ -59,28 +68,33 @@
       "type": "RegisteredResources",
       "items": [
         {
-          "name": "01_Overview_background.png",
-          "path": "01_Overview_background.png",
-          "type": "Image"
-        },
-        {
-          "name": "02_Wealth_background.png",
-          "path": "02_Wealth_background.png",
-          "type": "Image"
-        },
-        {
-          "name": "03_Advisors_background.png",
-          "path": "03_Advisors_background.png",
-          "type": "Image"
-        },
-        {
-          "name": "04_Risk_background.png",
-          "path": "04_Risk_background.png",
-          "type": "Image"
-        },
-        {
           "name": "bank9609531559429151.png",
           "path": "bank9609531559429151.png",
+          "type": "Image"
+        },
+        {
+          "name": "GoldIvory_PlusJakarta_theme.json",
+          "path": "GoldIvory_PlusJakarta_theme.json",
+          "type": "CustomTheme"
+        },
+        {
+          "name": "bg_01_overview.png",
+          "path": "bg_01_overview.png",
+          "type": "Image"
+        },
+        {
+          "name": "bg_02_wealth.png",
+          "path": "bg_02_wealth.png",
+          "type": "Image"
+        },
+        {
+          "name": "bg_03_advisors.png",
+          "path": "bg_03_advisors.png",
+          "type": "Image"
+        },
+        {
+          "name": "bg_04_risk.png",
+          "path": "bg_04_risk.png",
           "type": "Image"
         }
       ]
