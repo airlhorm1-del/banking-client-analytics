@@ -39,6 +39,9 @@
       }
     ]
   },
+  "publicCustomVisuals": [
+    "deneb7E15AEF80B9E4D4F8E12924291ECE89A"
+  ],
   "resourcePackages": [
     {
       "name": "SharedResources",
@@ -55,11 +58,6 @@
       "name": "RegisteredResources",
       "type": "RegisteredResources",
       "items": [
-        {
-          "name": "bank9609531559429151.png",
-          "path": "bank9609531559429151.png",
-          "type": "Image"
-        },
         {
           "name": "01_Overview_background.png",
           "path": "01_Overview_background.png",
@@ -79,6 +77,22 @@
           "name": "04_Risk_background.png",
           "path": "04_Risk_background.png",
           "type": "Image"
+        },
+        {
+          "name": "bank9609531559429151.png",
+          "path": "bank9609531559429151.png",
+          "type": "Image"
+        }
+      ]
+    },
+    {
+      "name": "STANDALONEhtmlContent443BE3AD55E043BF878BED274D3A6855",
+      "type": "CustomVisual",
+      "items": [
+        {
+          "name": "STANDALONEhtmlContent443BE3AD55E043BF878BED274D3A6855.pbiviz.json",
+          "path": "STANDALONEhtmlContent443BE3AD55E043BF878BED274D3A6855.pbiviz.json",
+          "type": "CustomVisualMetadata"
         }
       ]
     }
