@@ -120,7 +120,8 @@ def html(measure_name):
     return {
         "visualType": HTML_VISUAL,
         "query": {"queryState": {"content": {"projections": [measure(measure_name)]}}},
-        "objects": {"contentFormatting": [{"properties": {"noDataMessage": txt(" ")}}]},
+        "objects": {"contentFormatting": [{"properties": {"noDataMessage": txt(" ")}}],
+                    "compatibility": [{"properties": {"legacyRendering": b(True)}}]},   # what Power BI stores on save
         "visualContainerObjects": bare(), "drillFilterOtherVisuals": True,
     }
 
