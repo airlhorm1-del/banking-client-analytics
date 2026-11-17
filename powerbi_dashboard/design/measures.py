@@ -454,6 +454,185 @@ RETURN
         & FORMAT ( [Total Clients], "#,0" ) & " clients" & IF ( _segment = "All clients", "", " · " & _segment ) & ".</div></div>"
 """
 
+# ================================================================ Advisors page
+ADVISORS_TBL = 'ADDCOLUMNS ( VALUES ( banking_clients[investment_advisor] ), "@n", [Avg Relationship Value], "@c", [Total Clients] )'
+FEES = 'DATATABLE ( "Fee", STRING, "Order", INTEGER, { { "Low", 1 }, { "Mid", 2 }, { "High", 3 } } )'
+AGE_BANDS = 'DATATABLE ( "Band", STRING, "Order", INTEGER, { { "Under 35", 1 }, { "35–59", 2 }, { "60+", 3 } } )'
+ROW_BAR = lambda left, top_expr, width, height, fill_expr, w_expr, track="#FFFFFF": (
+    f"\"<div style='position:absolute;left:{left}px;top:\" & {top_expr} & \"px;width:{width}px;height:{height}px;border-radius:{height / 2}px;"
+    f"background:{track};overflow:hidden;'><div style='height:{height}px;border-radius:{height / 2}px;background:\" & {fill_expr} & \";width:\" & {w_expr} & \"px;'></div></div>\"")
+
+MEASURES["Advisors Subtitle HTML"] = f"""
+-- Advisors page subtitle (follows the client-type pills)
+{s(f"<div style='{FONT}font-size:12.5px;line-height:16px;color:#5E5A52;white-space:nowrap;'>")}
+    & [Advisor Count] & " advisors · " & FORMAT ( [Total Clients], "#,0" ) & " clients · how client value differs by advisor</div>"
+"""
+
+MEASURES["Advisor KPI Count HTML"] = f"""
+-- KPI card: number of advisors, average clients each, clients per advisor (sorted, one bar per advisor)
+VAR _n = [Advisor Count]
+VAR _t = ADDCOLUMNS ( VALUES ( banking_clients[investment_advisor] ), "@n", [Total Clients] )
+VAR _max = MAXX ( _t, [@n] )
+VAR _bars =
+    CONCATENATEX ( _t,
+        VAR _cur = [@n]
+        VAR _name = banking_clients[investment_advisor]
+        VAR _rank = COUNTROWS ( FILTER ( _t, [@n] > _cur || ( [@n] = _cur && banking_clients[investment_advisor] < _name ) ) ) + 1
+        VAR _h = ROUND ( DIVIDE ( _cur, _max ) * 42, 1 )
+        RETURN "<rect x='" & FORMAT ( ( _rank - 1 ) * 3.4, "0.0" ) & "' y='" & FORMAT ( 42 - _h, "0.0" )
+            & "' width='2.4' height='" & FORMAT ( _h, "0.0" ) & "' rx='1' fill='{LIGHT_BAR}'/>",
+        "" )
+RETURN
+    {s(KPI_WRAP + KPI_LABEL("Advisors") + KPI_VALUE)} & _n & "</div>"
+        & {s(KPI_NOTE_GREY)} & "avg " & FORMAT ( DIVIDE ( [Total Clients], _n ), "0" ) & "<br>clients each</div>"
+        & "<svg style='position:absolute;left:240px;top:24px;' width='75' height='42' viewBox='0 0 75 42'>" & _bars & "</svg>"
+        & {s(CAPTION(240, 68) + "Clients per<br>advisor</div></div>")}
+"""
+
+MEASURES["Advisor KPI Gap HTML"] = f"""
+-- KPI card: how much higher the top advisor's average client value is than the bottom advisor's
+VAR _t = {ADVISORS_TBL}
+VAR _max = MAXX ( _t, [@n] )
+VAR _min = MINX ( _t, [@n] )
+VAR _bars =
+    CONCATENATEX ( _t,
+        VAR _rank = RANKX ( _t, [@n], , DESC, DENSE )
+        VAR _h = ROUND ( DIVIDE ( [@n], _max ) * 42, 1 )
+        RETURN "<rect x='" & FORMAT ( ( _rank - 1 ) * 3.4, "0.0" ) & "' y='" & FORMAT ( 42 - _h, "0.0" )
+            & "' width='2.4' height='" & FORMAT ( _h, "0.0" ) & "' rx='1' fill='" & IF ( [@n] = _max, "{GOLD_BAR}", "{LIGHT_BAR}" ) & "'/>",
+        "" )
+RETURN
+    {s(KPI_WRAP + KPI_LABEL("Top vs bottom advisor") + KPI_VALUE)} & FORMAT ( DIVIDE ( _max, _min ) - 1, "+0.0%" ) & "</div>"
+        & {s(box(184, 60, f"font-size:11px;line-height:15px;font-weight:600;color:{GREY};white-space:nowrap;"))} & {amt("_max")} & " vs<br>" & {amt("_min")} & "</div>"
+        & "<svg style='position:absolute;left:240px;top:24px;' width='75' height='42' viewBox='0 0 75 42'>" & _bars & "</svg>"
+        & {s(CAPTION(240, 68) + "Avg client value,<br>per advisor</div></div>")}
+"""
+
+MEASURES["Advisor KPI Value HTML"] = f"""
+-- KPI card: average client value, and the average per fee structure
+VAR _avg = [Avg Relationship Value]
+VAR _vals = ADDCOLUMNS ( {FEES}, "@n", VAR _f = [Fee] RETURN CALCULATE ( [Avg Relationship Value], banking_clients[fee_structure] = _f ) )
+VAR _max = MAXX ( _vals, [@n] )
+VAR _bars = {mini_bars("_vals", 3, 14, 22)}
+RETURN
+    {s(KPI_WRAP + KPI_LABEL("Average client value") + KPI_VALUE)} & {amt("_avg")} & "</div>"
+        & {s(KPI_NOTE_GREY)} & "across<br>" & [Advisor Count] & " advisors</div>"
+        & "<svg style='position:absolute;left:244px;top:24px;' width='58' height='42' viewBox='0 0 58 42'>" & _bars & "</svg>"
+        & {s(CAPTION(244, 68) + "By fee structure,<br>Low → High</div></div>")}
+"""
+
+MEASURES["Advisor Ranking HTML"] = f"""
+-- Left panel: every advisor ranked by average relationship value, with a dashed bank-average line
+VAR _t = {ADVISORS_TBL}
+VAR _max = MAXX ( _t, [@n] )
+VAR _bank = [Avg Relationship Value]
+VAR _avgX = 170 + ROUND ( DIVIDE ( _bank, _max ) * 230, 0 )
+VAR _rows =
+    CONCATENATEX ( _t,
+        VAR _rank = RANKX ( _t, [@n], , DESC, DENSE )
+        VAR _top = 80 + ( _rank - 1 ) * 24.5
+        VAR _w = ROUND ( DIVIDE ( [@n], _max ) * 230, 0 )
+        RETURN
+            "<div style='position:absolute;left:14px;top:" & _top & "px;width:22px;text-align:right;font-size:10px;line-height:15px;color:{GREY};'>" & _rank & "</div>"
+            & "<div style='position:absolute;left:44px;top:" & _top & "px;width:122px;font-size:11px;line-height:15px;color:{INK2};white-space:nowrap;overflow:hidden;'>"
+            & banking_clients[investment_advisor] & "</div>"
+            & {ROW_BAR(170, "( _top + 4 )", 230, 8, f'IF ( _rank = 1, "{INK}", "{GOLD_BAR}" )', "_w")}
+            & "<div style='position:absolute;right:20px;top:" & _top & "px;font-size:11px;line-height:15px;font-weight:700;'>" & {amt("[@n]")} & "</div>",
+        "" )
+RETURN
+    {s(f"<div style='position:relative;width:490px;height:658px;{FONT}color:{INK};'>"
+       + box(20, 18, TITLE) + "Advisor ranking</div>"
+       + box(20, 41, f"font-size:10.5px;line-height:14px;color:{GREY};white-space:nowrap;") + "Average relationship value per client, every advisor ranked</div>"
+       + "<div style='position:absolute;right:20px;top:20px;padding:0 12px;height:25px;line-height:25px;border-radius:12.5px;background:#FFFFFF;font-size:10.5px;font-weight:700;white-space:nowrap;'>Bank average ")}
+        & {amt("_bank")} & "</div>"
+        & _rows
+        & "<div style='position:absolute;left:" & _avgX & "px;top:78px;height:" & ( 24.5 * COUNTROWS ( _t ) - 6 ) & "px;border-left:1.5px dashed #8C8478;'></div>"
+        & {s(box(20, 632, f"font-size:10px;line-height:14px;color:{GREY};white-space:nowrap;") + "Black bar: highest average. Dashed line: bank average for the clients in the selection.</div></div>")}
+"""
+
+MEASURES["Advisor Spread HTML"] = f"""
+-- Gold panel: the highest and lowest advisor by average client value
+VAR _t = {ADVISORS_TBL}
+VAR _hiRow = TOPN ( 1, _t, [@n], DESC )
+VAR _loRow = TOPN ( 1, _t, [@n], ASC )
+VAR _hiName = MAXX ( _hiRow, banking_clients[investment_advisor] )
+VAR _loName = MAXX ( _loRow, banking_clients[investment_advisor] )
+VAR _hi = MAXX ( _hiRow, [@n] )
+VAR _lo = MAXX ( _loRow, [@n] )
+VAR _hiC = MAXX ( _hiRow, [@c] )
+VAR _loC = MAXX ( _loRow, [@c] )
+VAR _card = "<div style='position:absolute;top:96px;width:214px;height:88px;border-radius:13px;background:#FFFFFF;"
+RETURN
+    {s(f"<div style='position:relative;width:490px;height:202px;{FONT}color:{INK};'>"
+       + box(19, 18, "font-size:10.5px;line-height:14px;font-weight:700;letter-spacing:1.6px;white-space:nowrap;") + "ADVISOR SPREAD</div>"
+       + box(19, 38, "font-size:19px;line-height:24px;font-weight:800;white-space:nowrap;") + "A ")}
+        & FORMAT ( DIVIDE ( _hi, _lo ) - 1, "0.0%" ) & " gap from top to bottom advisor</div>"
+        & _card & "left:19px;'>"
+        & {s(box(16, 14, "font-size:9.5px;line-height:12px;font-weight:700;letter-spacing:1.2px;color:#A8894A;") + "HIGHEST</div>"
+             + box(16, 31, "font-size:14px;line-height:18px;font-weight:700;white-space:nowrap;"))} & _hiName & "</div>"
+        & {s(box(16, 53, f"font-size:10.5px;line-height:14px;color:{GREY};white-space:nowrap;"))} & {amt("_hi")} & " avg · " & _hiC & " clients</div></div>"
+        & _card & "left:257px;'>"
+        & {s(box(16, 14, "font-size:9.5px;line-height:12px;font-weight:700;letter-spacing:1.2px;color:#A8894A;") + "LOWEST</div>"
+             + box(16, 31, "font-size:14px;line-height:18px;font-weight:700;white-space:nowrap;"))} & _loName & "</div>"
+        & {s(box(16, 53, f"font-size:10.5px;line-height:14px;color:{GREY};white-space:nowrap;"))} & {amt("_lo")} & " avg · " & _loC & " clients</div></div></div>"
+"""
+
+MEASURES["Fee Structure HTML"] = f"""
+-- Right middle panel: average relationship value per fee structure; the footnote checks how big the difference is
+VAR _vals =
+    ADDCOLUMNS ( {FEES},
+        "@n", VAR _f = [Fee] RETURN CALCULATE ( [Avg Relationship Value], banking_clients[fee_structure] = _f ),
+        "@c", VAR _f = [Fee] RETURN CALCULATE ( [Total Clients], banking_clients[fee_structure] = _f ) )
+VAR _max = MAXX ( _vals, [@n] )
+VAR _min = MINX ( _vals, [@n] )
+VAR _best = MAXX ( TOPN ( 1, _vals, [@n], DESC ), [Fee] )
+VAR _note =
+    IF ( DIVIDE ( _max, _min ) - 1 < 0.05,
+        "Fee level makes little difference: the gap between fee groups is " & FORMAT ( DIVIDE ( _max, _min ) - 1, "0.0%" ) & ".",
+        "Clients on the " & LOWER ( _best ) & " fee hold the most value, " & FORMAT ( DIVIDE ( _max, _min ) - 1, "0.0%" ) & " above the lowest group." )
+VAR _rows =
+    CONCATENATEX ( _vals,
+        VAR _top = 72 + ( [Order] - 1 ) * 38
+        VAR _w = ROUND ( DIVIDE ( [@n], _max ) * 250, 0 )
+        RETURN
+            "<div style='position:absolute;left:20px;top:" & _top & "px;font-size:12px;line-height:16px;font-weight:600;'>" & [Fee] & "</div>"
+            & "<div style='position:absolute;left:20px;top:" & ( _top + 16 ) & "px;font-size:9.5px;line-height:12px;color:{GREY};'>" & FORMAT ( [@c], "#,0" ) & " clients</div>"
+            & {ROW_BAR(110, "( _top + 6 )", 250, 10, f'IF ( [@n] = _max, "{INK}", "{GOLD_BAR}" )', "_w")}
+            & "<div style='position:absolute;right:20px;top:" & ( _top + 3 ) & "px;font-size:12px;line-height:16px;font-weight:700;'>" & {amt("[@n]")} & "</div>",
+        "", [Order], ASC )
+RETURN
+    {s(f"<div style='position:relative;width:490px;height:213px;{FONT}color:{INK};'>"
+       + box(20, 18, TITLE) + "Value by fee structure</div>"
+       + box(20, 41, f"font-size:10.5px;line-height:14px;color:{GREY};white-space:nowrap;") + "Average relationship value per client</div>")}
+        & _rows
+        & {s(box(20, 188, f"font-size:10px;line-height:14px;color:#4A463F;white-space:nowrap;"))} & _note & "</div></div>"
+"""
+
+MEASURES["Age Band Income HTML"] = f"""
+-- Right bottom panel: total estimated income per age band, with each band's share
+VAR _vals = ADDCOLUMNS ( {AGE_BANDS}, "@n", VAR _b = [Band] RETURN CALCULATE ( SUM ( banking_clients[estimated_income] ), banking_clients[Age Band] = _b ) )
+VAR _total = SUMX ( _vals, [@n] )
+VAR _max = MAXX ( _vals, [@n] )
+VAR _over35 = DIVIDE ( SUMX ( FILTER ( _vals, [Order] > 1 ), [@n] ), _total )
+VAR _rows =
+    CONCATENATEX ( _vals,
+        VAR _top = 72 + ( [Order] - 1 ) * 38
+        VAR _w = ROUND ( DIVIDE ( [@n], _max ) * 250, 0 )
+        RETURN
+            "<div style='position:absolute;left:20px;top:" & ( _top + 3 ) & "px;font-size:12px;line-height:16px;font-weight:600;'>" & [Band] & "</div>"
+            & {ROW_BAR(110, "( _top + 6 )", 250, 10, f'IF ( [@n] = _max, "{INK}", "{GOLD_BAR}" )', "_w")}
+            & "<div style='position:absolute;right:20px;top:" & ( _top + 3 ) & "px;font-size:12px;line-height:16px;font-weight:700;white-space:nowrap;'>"
+            & {amt("[@n]")} & "<span style='font-weight:400;color:{GREY};'> · " & FORMAT ( DIVIDE ( [@n], _total ), "0%" ) & "</span></div>",
+        "", [Order], ASC )
+RETURN
+    {s(f"<div style='position:relative;width:490px;height:211px;{FONT}color:{INK};'>"
+       + box(20, 18, TITLE) + "Income by age band</div>"
+       + box(20, 41, f"font-size:10.5px;line-height:14px;color:{GREY};white-space:nowrap;") + "Total estimated income of clients in each age band</div>")}
+        & _rows
+        & {s(box(20, 186, f"font-size:10px;line-height:14px;color:#4A463F;white-space:nowrap;") + "Clients aged 35 and over earn ")}
+        & FORMAT ( COALESCE ( _over35, 0 ), "0%" ) & " of the total estimated income.</div></div>"
+"""
+
 # Earlier helpers from this phase that the Deneb switch and pills made unnecessary (removed if present)
 RETIRED = ["Gauge Value", "Gauge Min", "Gauge Max", "Gauge Label", "Gauge Caption", "All Clients Pill Fill"]
 

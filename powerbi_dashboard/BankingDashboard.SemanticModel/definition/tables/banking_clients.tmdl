@@ -460,6 +460,171 @@ table banking_clients
 			        & FORMAT ( [Total Clients], "#,0" ) & " clients" & IF ( _segment = "All clients", "", " · " & _segment ) & ".</div></div>"
 		lineageTag: 1712d1d0-a5ea-50df-b445-b2842de4273f
 
+	measure 'Advisors Subtitle HTML' =
+			-- Advisors page subtitle (follows the client-type pills)
+			"<div style='font-family:Plus Jakarta Sans,Segoe UI,sans-serif;font-size:12.5px;line-height:16px;color:#5E5A52;white-space:nowrap;'>"
+			    & [Advisor Count] & " advisors · " & FORMAT ( [Total Clients], "#,0" ) & " clients · how client value differs by advisor</div>"
+		lineageTag: 4f05080e-7382-5b8b-a1e8-1c7e3af7bd31
+
+	measure 'Advisor KPI Count HTML' =
+			-- KPI card: number of advisors, average clients each, clients per advisor (sorted, one bar per advisor)
+			VAR _n = [Advisor Count]
+			VAR _t = ADDCOLUMNS ( VALUES ( banking_clients[investment_advisor] ), "@n", [Total Clients] )
+			VAR _max = MAXX ( _t, [@n] )
+			VAR _bars =
+			    CONCATENATEX ( _t,
+			        VAR _cur = [@n]
+			        VAR _name = banking_clients[investment_advisor]
+			        VAR _rank = COUNTROWS ( FILTER ( _t, [@n] > _cur || ( [@n] = _cur && banking_clients[investment_advisor] < _name ) ) ) + 1
+			        VAR _h = ROUND ( DIVIDE ( _cur, _max ) * 42, 1 )
+			        RETURN "<rect x='" & FORMAT ( ( _rank - 1 ) * 3.4, "0.0" ) & "' y='" & FORMAT ( 42 - _h, "0.0" )
+			            & "' width='2.4' height='" & FORMAT ( _h, "0.0" ) & "' rx='1' fill='#E5D6AF'/>",
+			        "" )
+			RETURN
+			    "<div style='position:relative;width:322px;height:111px;overflow:hidden;font-family:Plus Jakarta Sans,Segoe UI,sans-serif;color:#17140F;'><div style='position:absolute;left:19px;top:24px;font-size:12.5px;line-height:16px;font-weight:500;color:#2F2B26;white-space:nowrap;'>Advisors</div><div style='position:absolute;left:70px;top:57px;font-size:27px;line-height:34px;font-weight:700;letter-spacing:-0.3px;white-space:nowrap;'>" & _n & "</div>"
+			        & "<div style='position:absolute;left:160px;top:60px;font-size:11px;line-height:15px;font-weight:600;color:#6B665D;white-space:nowrap;'>" & "avg " & FORMAT ( DIVIDE ( [Total Clients], _n ), "0" ) & "<br>clients each</div>"
+			        & "<svg style='position:absolute;left:240px;top:24px;' width='75' height='42' viewBox='0 0 75 42'>" & _bars & "</svg>"
+			        & "<div style='position:absolute;left:240px;top:68px;font-size:9px;line-height:13px;color:#6B665D;white-space:nowrap;'>Clients per<br>advisor</div></div>"
+		lineageTag: 42ef26d6-f60f-582d-9835-56d7a51febf6
+
+	measure 'Advisor KPI Gap HTML' =
+			-- KPI card: how much higher the top advisor's average client value is than the bottom advisor's
+			VAR _t = ADDCOLUMNS ( VALUES ( banking_clients[investment_advisor] ), "@n", [Avg Relationship Value], "@c", [Total Clients] )
+			VAR _max = MAXX ( _t, [@n] )
+			VAR _min = MINX ( _t, [@n] )
+			VAR _bars =
+			    CONCATENATEX ( _t,
+			        VAR _rank = RANKX ( _t, [@n], , DESC, DENSE )
+			        VAR _h = ROUND ( DIVIDE ( [@n], _max ) * 42, 1 )
+			        RETURN "<rect x='" & FORMAT ( ( _rank - 1 ) * 3.4, "0.0" ) & "' y='" & FORMAT ( 42 - _h, "0.0" )
+			            & "' width='2.4' height='" & FORMAT ( _h, "0.0" ) & "' rx='1' fill='" & IF ( [@n] = _max, "#C4A66A", "#E5D6AF" ) & "'/>",
+			        "" )
+			RETURN
+			    "<div style='position:relative;width:322px;height:111px;overflow:hidden;font-family:Plus Jakarta Sans,Segoe UI,sans-serif;color:#17140F;'><div style='position:absolute;left:19px;top:24px;font-size:12.5px;line-height:16px;font-weight:500;color:#2F2B26;white-space:nowrap;'>Top vs bottom advisor</div><div style='position:absolute;left:70px;top:57px;font-size:27px;line-height:34px;font-weight:700;letter-spacing:-0.3px;white-space:nowrap;'>" & FORMAT ( DIVIDE ( _max, _min ) - 1, "+0.0%" ) & "</div>"
+			        & "<div style='position:absolute;left:184px;top:60px;font-size:11px;line-height:15px;font-weight:600;color:#6B665D;white-space:nowrap;'>" & IF(_max >= 1000000000, FORMAT(_max / 1000000000, "0.00") & "bn", IF(_max >= 1000000, FORMAT(_max / 1000000, "0.00") & "M", IF(_max >= 1000, FORMAT(_max / 1000, "0") & "K", FORMAT(_max, "0")))) & " vs<br>" & IF(_min >= 1000000000, FORMAT(_min / 1000000000, "0.00") & "bn", IF(_min >= 1000000, FORMAT(_min / 1000000, "0.00") & "M", IF(_min >= 1000, FORMAT(_min / 1000, "0") & "K", FORMAT(_min, "0")))) & "</div>"
+			        & "<svg style='position:absolute;left:240px;top:24px;' width='75' height='42' viewBox='0 0 75 42'>" & _bars & "</svg>"
+			        & "<div style='position:absolute;left:240px;top:68px;font-size:9px;line-height:13px;color:#6B665D;white-space:nowrap;'>Avg client value,<br>per advisor</div></div>"
+		lineageTag: d723e2e2-b8b1-51c3-a96e-03d1a31e16c6
+
+	measure 'Advisor KPI Value HTML' =
+			-- KPI card: average client value, and the average per fee structure
+			VAR _avg = [Avg Relationship Value]
+			VAR _vals = ADDCOLUMNS ( DATATABLE ( "Fee", STRING, "Order", INTEGER, { { "Low", 1 }, { "Mid", 2 }, { "High", 3 } } ), "@n", VAR _f = [Fee] RETURN CALCULATE ( [Avg Relationship Value], banking_clients[fee_structure] = _f ) )
+			VAR _max = MAXX ( _vals, [@n] )
+			VAR _bars = CONCATENATEX ( _vals,
+			        VAR _h = ROUND ( DIVIDE ( [@n], _max ) * 42, 1 )
+			        RETURN "<rect x='" & FORMAT ( ( [Order] - 1 ) * 22, "0.0" ) & "' y='" & FORMAT ( 42 - _h, "0.0" )
+			            & "' width='14' height='" & FORMAT ( _h, "0.0" ) & "' rx='2' fill='"
+			            & IF ( [@n] = _max, "#C4A66A", "#E5D6AF" ) & "'/>",
+			        "", [Order], ASC )
+			RETURN
+			    "<div style='position:relative;width:322px;height:111px;overflow:hidden;font-family:Plus Jakarta Sans,Segoe UI,sans-serif;color:#17140F;'><div style='position:absolute;left:19px;top:24px;font-size:12.5px;line-height:16px;font-weight:500;color:#2F2B26;white-space:nowrap;'>Average client value</div><div style='position:absolute;left:70px;top:57px;font-size:27px;line-height:34px;font-weight:700;letter-spacing:-0.3px;white-space:nowrap;'>" & IF(_avg >= 1000000000, FORMAT(_avg / 1000000000, "0.00") & "bn", IF(_avg >= 1000000, FORMAT(_avg / 1000000, "0.00") & "M", IF(_avg >= 1000, FORMAT(_avg / 1000, "0") & "K", FORMAT(_avg, "0")))) & "</div>"
+			        & "<div style='position:absolute;left:160px;top:60px;font-size:11px;line-height:15px;font-weight:600;color:#6B665D;white-space:nowrap;'>" & "across<br>" & [Advisor Count] & " advisors</div>"
+			        & "<svg style='position:absolute;left:244px;top:24px;' width='58' height='42' viewBox='0 0 58 42'>" & _bars & "</svg>"
+			        & "<div style='position:absolute;left:244px;top:68px;font-size:9px;line-height:13px;color:#6B665D;white-space:nowrap;'>By fee structure,<br>Low → High</div></div>"
+		lineageTag: ba526e7a-e2d3-5550-a721-649f5dd69cd7
+
+	measure 'Advisor Ranking HTML' =
+			-- Left panel: every advisor ranked by average relationship value, with a dashed bank-average line
+			VAR _t = ADDCOLUMNS ( VALUES ( banking_clients[investment_advisor] ), "@n", [Avg Relationship Value], "@c", [Total Clients] )
+			VAR _max = MAXX ( _t, [@n] )
+			VAR _bank = [Avg Relationship Value]
+			VAR _avgX = 170 + ROUND ( DIVIDE ( _bank, _max ) * 230, 0 )
+			VAR _rows =
+			    CONCATENATEX ( _t,
+			        VAR _rank = RANKX ( _t, [@n], , DESC, DENSE )
+			        VAR _top = 80 + ( _rank - 1 ) * 24.5
+			        VAR _w = ROUND ( DIVIDE ( [@n], _max ) * 230, 0 )
+			        RETURN
+			            "<div style='position:absolute;left:14px;top:" & _top & "px;width:22px;text-align:right;font-size:10px;line-height:15px;color:#6B665D;'>" & _rank & "</div>"
+			            & "<div style='position:absolute;left:44px;top:" & _top & "px;width:122px;font-size:11px;line-height:15px;color:#2F2B26;white-space:nowrap;overflow:hidden;'>"
+			            & banking_clients[investment_advisor] & "</div>"
+			            & "<div style='position:absolute;left:170px;top:" & ( _top + 4 ) & "px;width:230px;height:8px;border-radius:4.0px;background:#FFFFFF;overflow:hidden;'><div style='height:8px;border-radius:4.0px;background:" & IF ( _rank = 1, "#17140F", "#C4A66A" ) & ";width:" & _w & "px;'></div></div>"
+			            & "<div style='position:absolute;right:20px;top:" & _top & "px;font-size:11px;line-height:15px;font-weight:700;'>" & IF([@n] >= 1000000000, FORMAT([@n] / 1000000000, "0.00") & "bn", IF([@n] >= 1000000, FORMAT([@n] / 1000000, "0.00") & "M", IF([@n] >= 1000, FORMAT([@n] / 1000, "0") & "K", FORMAT([@n], "0")))) & "</div>",
+			        "" )
+			RETURN
+			    "<div style='position:relative;width:490px;height:658px;font-family:Plus Jakarta Sans,Segoe UI,sans-serif;color:#17140F;'><div style='position:absolute;left:20px;top:18px;font-size:16.5px;line-height:22px;font-weight:800;'>Advisor ranking</div><div style='position:absolute;left:20px;top:41px;font-size:10.5px;line-height:14px;color:#6B665D;white-space:nowrap;'>Average relationship value per client, every advisor ranked</div><div style='position:absolute;right:20px;top:20px;padding:0 12px;height:25px;line-height:25px;border-radius:12.5px;background:#FFFFFF;font-size:10.5px;font-weight:700;white-space:nowrap;'>Bank average "
+			        & IF(_bank >= 1000000000, FORMAT(_bank / 1000000000, "0.00") & "bn", IF(_bank >= 1000000, FORMAT(_bank / 1000000, "0.00") & "M", IF(_bank >= 1000, FORMAT(_bank / 1000, "0") & "K", FORMAT(_bank, "0")))) & "</div>"
+			        & _rows
+			        & "<div style='position:absolute;left:" & _avgX & "px;top:78px;height:" & ( 24.5 * COUNTROWS ( _t ) - 6 ) & "px;border-left:1.5px dashed #8C8478;'></div>"
+			        & "<div style='position:absolute;left:20px;top:632px;font-size:10px;line-height:14px;color:#6B665D;white-space:nowrap;'>Black bar: highest average. Dashed line: bank average for the clients in the selection.</div></div>"
+		lineageTag: d7c57517-65ff-5c2e-8762-bf8eb5871404
+
+	measure 'Advisor Spread HTML' =
+			-- Gold panel: the highest and lowest advisor by average client value
+			VAR _t = ADDCOLUMNS ( VALUES ( banking_clients[investment_advisor] ), "@n", [Avg Relationship Value], "@c", [Total Clients] )
+			VAR _hiRow = TOPN ( 1, _t, [@n], DESC )
+			VAR _loRow = TOPN ( 1, _t, [@n], ASC )
+			VAR _hiName = MAXX ( _hiRow, banking_clients[investment_advisor] )
+			VAR _loName = MAXX ( _loRow, banking_clients[investment_advisor] )
+			VAR _hi = MAXX ( _hiRow, [@n] )
+			VAR _lo = MAXX ( _loRow, [@n] )
+			VAR _hiC = MAXX ( _hiRow, [@c] )
+			VAR _loC = MAXX ( _loRow, [@c] )
+			VAR _card = "<div style='position:absolute;top:96px;width:214px;height:88px;border-radius:13px;background:#FFFFFF;"
+			RETURN
+			    "<div style='position:relative;width:490px;height:202px;font-family:Plus Jakarta Sans,Segoe UI,sans-serif;color:#17140F;'><div style='position:absolute;left:19px;top:18px;font-size:10.5px;line-height:14px;font-weight:700;letter-spacing:1.6px;white-space:nowrap;'>ADVISOR SPREAD</div><div style='position:absolute;left:19px;top:38px;font-size:19px;line-height:24px;font-weight:800;white-space:nowrap;'>A "
+			        & FORMAT ( DIVIDE ( _hi, _lo ) - 1, "0.0%" ) & " gap from top to bottom advisor</div>"
+			        & _card & "left:19px;'>"
+			        & "<div style='position:absolute;left:16px;top:14px;font-size:9.5px;line-height:12px;font-weight:700;letter-spacing:1.2px;color:#A8894A;'>HIGHEST</div><div style='position:absolute;left:16px;top:31px;font-size:14px;line-height:18px;font-weight:700;white-space:nowrap;'>" & _hiName & "</div>"
+			        & "<div style='position:absolute;left:16px;top:53px;font-size:10.5px;line-height:14px;color:#6B665D;white-space:nowrap;'>" & IF(_hi >= 1000000000, FORMAT(_hi / 1000000000, "0.00") & "bn", IF(_hi >= 1000000, FORMAT(_hi / 1000000, "0.00") & "M", IF(_hi >= 1000, FORMAT(_hi / 1000, "0") & "K", FORMAT(_hi, "0")))) & " avg · " & _hiC & " clients</div></div>"
+			        & _card & "left:257px;'>"
+			        & "<div style='position:absolute;left:16px;top:14px;font-size:9.5px;line-height:12px;font-weight:700;letter-spacing:1.2px;color:#A8894A;'>LOWEST</div><div style='position:absolute;left:16px;top:31px;font-size:14px;line-height:18px;font-weight:700;white-space:nowrap;'>" & _loName & "</div>"
+			        & "<div style='position:absolute;left:16px;top:53px;font-size:10.5px;line-height:14px;color:#6B665D;white-space:nowrap;'>" & IF(_lo >= 1000000000, FORMAT(_lo / 1000000000, "0.00") & "bn", IF(_lo >= 1000000, FORMAT(_lo / 1000000, "0.00") & "M", IF(_lo >= 1000, FORMAT(_lo / 1000, "0") & "K", FORMAT(_lo, "0")))) & " avg · " & _loC & " clients</div></div></div>"
+		lineageTag: 96b5bda5-017b-5173-9049-b6d36a59ca4e
+
+	measure 'Fee Structure HTML' =
+			-- Right middle panel: average relationship value per fee structure; the footnote checks how big the difference is
+			VAR _vals =
+			    ADDCOLUMNS ( DATATABLE ( "Fee", STRING, "Order", INTEGER, { { "Low", 1 }, { "Mid", 2 }, { "High", 3 } } ),
+			        "@n", VAR _f = [Fee] RETURN CALCULATE ( [Avg Relationship Value], banking_clients[fee_structure] = _f ),
+			        "@c", VAR _f = [Fee] RETURN CALCULATE ( [Total Clients], banking_clients[fee_structure] = _f ) )
+			VAR _max = MAXX ( _vals, [@n] )
+			VAR _min = MINX ( _vals, [@n] )
+			VAR _best = MAXX ( TOPN ( 1, _vals, [@n], DESC ), [Fee] )
+			VAR _note =
+			    IF ( DIVIDE ( _max, _min ) - 1 < 0.05,
+			        "Fee level makes little difference: the gap between fee groups is " & FORMAT ( DIVIDE ( _max, _min ) - 1, "0.0%" ) & ".",
+			        "Clients on the " & LOWER ( _best ) & " fee hold the most value, " & FORMAT ( DIVIDE ( _max, _min ) - 1, "0.0%" ) & " above the lowest group." )
+			VAR _rows =
+			    CONCATENATEX ( _vals,
+			        VAR _top = 72 + ( [Order] - 1 ) * 38
+			        VAR _w = ROUND ( DIVIDE ( [@n], _max ) * 250, 0 )
+			        RETURN
+			            "<div style='position:absolute;left:20px;top:" & _top & "px;font-size:12px;line-height:16px;font-weight:600;'>" & [Fee] & "</div>"
+			            & "<div style='position:absolute;left:20px;top:" & ( _top + 16 ) & "px;font-size:9.5px;line-height:12px;color:#6B665D;'>" & FORMAT ( [@c], "#,0" ) & " clients</div>"
+			            & "<div style='position:absolute;left:110px;top:" & ( _top + 6 ) & "px;width:250px;height:10px;border-radius:5.0px;background:#FFFFFF;overflow:hidden;'><div style='height:10px;border-radius:5.0px;background:" & IF ( [@n] = _max, "#17140F", "#C4A66A" ) & ";width:" & _w & "px;'></div></div>"
+			            & "<div style='position:absolute;right:20px;top:" & ( _top + 3 ) & "px;font-size:12px;line-height:16px;font-weight:700;'>" & IF([@n] >= 1000000000, FORMAT([@n] / 1000000000, "0.00") & "bn", IF([@n] >= 1000000, FORMAT([@n] / 1000000, "0.00") & "M", IF([@n] >= 1000, FORMAT([@n] / 1000, "0") & "K", FORMAT([@n], "0")))) & "</div>",
+			        "", [Order], ASC )
+			RETURN
+			    "<div style='position:relative;width:490px;height:213px;font-family:Plus Jakarta Sans,Segoe UI,sans-serif;color:#17140F;'><div style='position:absolute;left:20px;top:18px;font-size:16.5px;line-height:22px;font-weight:800;'>Value by fee structure</div><div style='position:absolute;left:20px;top:41px;font-size:10.5px;line-height:14px;color:#6B665D;white-space:nowrap;'>Average relationship value per client</div>"
+			        & _rows
+			        & "<div style='position:absolute;left:20px;top:188px;font-size:10px;line-height:14px;color:#4A463F;white-space:nowrap;'>" & _note & "</div></div>"
+		lineageTag: b6c46f21-e4ec-510c-b658-3b3b663dad02
+
+	measure 'Age Band Income HTML' =
+			-- Right bottom panel: total estimated income per age band, with each band's share
+			VAR _vals = ADDCOLUMNS ( DATATABLE ( "Band", STRING, "Order", INTEGER, { { "Under 35", 1 }, { "35–59", 2 }, { "60+", 3 } } ), "@n", VAR _b = [Band] RETURN CALCULATE ( SUM ( banking_clients[estimated_income] ), banking_clients[Age Band] = _b ) )
+			VAR _total = SUMX ( _vals, [@n] )
+			VAR _max = MAXX ( _vals, [@n] )
+			VAR _over35 = DIVIDE ( SUMX ( FILTER ( _vals, [Order] > 1 ), [@n] ), _total )
+			VAR _rows =
+			    CONCATENATEX ( _vals,
+			        VAR _top = 72 + ( [Order] - 1 ) * 38
+			        VAR _w = ROUND ( DIVIDE ( [@n], _max ) * 250, 0 )
+			        RETURN
+			            "<div style='position:absolute;left:20px;top:" & ( _top + 3 ) & "px;font-size:12px;line-height:16px;font-weight:600;'>" & [Band] & "</div>"
+			            & "<div style='position:absolute;left:110px;top:" & ( _top + 6 ) & "px;width:250px;height:10px;border-radius:5.0px;background:#FFFFFF;overflow:hidden;'><div style='height:10px;border-radius:5.0px;background:" & IF ( [@n] = _max, "#17140F", "#C4A66A" ) & ";width:" & _w & "px;'></div></div>"
+			            & "<div style='position:absolute;right:20px;top:" & ( _top + 3 ) & "px;font-size:12px;line-height:16px;font-weight:700;white-space:nowrap;'>"
+			            & IF([@n] >= 1000000000, FORMAT([@n] / 1000000000, "0.00") & "bn", IF([@n] >= 1000000, FORMAT([@n] / 1000000, "0.00") & "M", IF([@n] >= 1000, FORMAT([@n] / 1000, "0") & "K", FORMAT([@n], "0")))) & "<span style='font-weight:400;color:#6B665D;'> · " & FORMAT ( DIVIDE ( [@n], _total ), "0%" ) & "</span></div>",
+			        "", [Order], ASC )
+			RETURN
+			    "<div style='position:relative;width:490px;height:211px;font-family:Plus Jakarta Sans,Segoe UI,sans-serif;color:#17140F;'><div style='position:absolute;left:20px;top:18px;font-size:16.5px;line-height:22px;font-weight:800;'>Income by age band</div><div style='position:absolute;left:20px;top:41px;font-size:10.5px;line-height:14px;color:#6B665D;white-space:nowrap;'>Total estimated income of clients in each age band</div>"
+			        & _rows
+			        & "<div style='position:absolute;left:20px;top:186px;font-size:10px;line-height:14px;color:#4A463F;white-space:nowrap;'>Clients aged 35 and over earn "
+			        & FORMAT ( COALESCE ( _over35, 0 ), "0%" ) & " of the total estimated income.</div></div>"
+		lineageTag: b7ee488f-7660-56e5-a143-8272eefbd6b2
+
 	column client_row_id
 		dataType: int64
 		formatString: 0

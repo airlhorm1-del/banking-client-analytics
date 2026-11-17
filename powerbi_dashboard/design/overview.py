@@ -434,6 +434,20 @@ wl.add("tier depth", 236, 670, 490, 292, html("Tier Depth HTML"))
 wl.add("finding", 742, 670, 490, 292, html("Wealth Finding HTML"))
 wl.write()
 
+# ------------------------------------------------------------------ Advisors page
+ad = Page(ADVISORS)
+sidebar_and_header(ad, ADVISORS)
+ad.add("title", 236, 49, 440, 34, textbox([("Advisors", 25, INK, "Plus Jakarta Sans ExtraBold", False, "left")]))
+ad.add("subtitle", 236, 86, 520, 20, html("Advisors Subtitle HTML"))
+ad.add("kpi count", 236, 175, 322, 111, html("Advisor KPI Count HTML"))
+ad.add("kpi gap", 573, 175, 322, 111, html("Advisor KPI Gap HTML"))
+ad.add("kpi value", 910, 175, 322, 111, html("Advisor KPI Value HTML"))
+ad.add("ranking", 236, 304, 490, 658, html("Advisor Ranking HTML"))
+ad.add("spread", 742, 304, 490, 202, html("Advisor Spread HTML"))
+ad.add("fee structure", 742, 522, 490, 213, html("Fee Structure HTML"))
+ad.add("age bands", 742, 751, 490, 211, html("Age Band Income HTML"))
+ad.write()
+
 # ------------------------------------------------------------------ Client data page (search + export)
 page_dir = PAGES / DATA_PAGE
 page_dir.mkdir(parents=True, exist_ok=True)
