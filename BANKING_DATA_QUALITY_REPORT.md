@@ -1,8 +1,8 @@
-# Banking Client Data — Data Quality Report
+# Banking Client Data: Data Quality Report
 
 **Dataset:** `banking_data.csv` → cleaned to `clean/banking_data_clean.csv`
 **Grain:** 1 row = 1 bank client
-**Rows:** 3,000 (unchanged by cleaning — no rows were dropped)
+**Rows:** 3,000 (unchanged by cleaning, no rows were dropped)
 **Raw columns:** 25 → **Cleaned columns:** 26
 
 All figures in this report are produced by scripts checked into this repository and can be independently re-run:
@@ -27,7 +27,7 @@ Source: `banking_quality_report.py`
 | Fully duplicated rows (all columns identical) | 0 |
 | Rows sharing a `Client ID` with another row | 60, across 59 distinct IDs |
 
-**Investigation (`banking_investigate_flags.py`):** every duplicated `Client ID` was checked — in each case the paired rows have different names, ages, join dates, and occupations. These are **distinct real clients whose ID happens to collide**, not the same person recorded twice.
+**Investigation (`banking_investigate_flags.py`):** every duplicated `Client ID` was checked. In each case the paired rows have different names, ages, join dates, and occupations. These are **distinct real clients whose ID happens to collide**, not the same person recorded twice.
 
 **Resolution:** no rows were dropped. `Client ID` cannot be relied on as a unique key, so a surrogate key `client_row_id` (1–3,000, guaranteed unique) was added in `banking_cleaning.py`.
 
@@ -45,7 +45,7 @@ Source: `banking_quality_report.py`
 | Zero balances (`bank_loans`, `bank_deposits`, `checking_accounts`, `saving_accounts`, `business_lending`) | 27 / 34 / 34 / 34 / 14 respectively |
 | `properties_owned` = 0 | 705 rows |
 
-**Investigation:** the 39 age-17 rows were checked individually — all are exactly 17, not implausible values like negative ages or triple digits. A 17-year-old can legitimately hold a bank account (e.g. youth/custodial account), so this was judged a too-strict assumed threshold, not a data error. Zero balances and zero properties owned are both plausible real states (a client simply may not hold that product / own property), not errors.
+**Investigation:** the 39 age-17 rows were checked individually: all are exactly 17, not implausible values like negative ages or triple digits. A 17-year-old can legitimately hold a bank account (e.g. youth/custodial account), so this was judged a too-strict assumed threshold, not a data error. Zero balances and zero properties owned are both plausible real states (a client simply may not hold that product / own property), not errors.
 
 **Resolution:** no rows were dropped or modified for any of the above.
 
@@ -78,7 +78,7 @@ All three joins matched 100% of rows (0 unmatched). The raw numeric codes were d
 
 ## 5. Accuracy
 
-Not independently verifiable — no external source-of-truth system was available to check the data against. Values are used as provided.
+Not independently verifiable: no external source-of-truth system was available to check the data against. Values are used as provided.
 
 ---
 
@@ -89,13 +89,13 @@ Not independently verifiable — no external source-of-truth system was availabl
 3. Joined the 3 recovered lookup tables in place of the raw coded IDs (see §4)
 4. Renamed all columns to `snake_case`, matching the convention used elsewhere in this repo
 
-**Rows before cleaning: 3,000 — Rows after cleaning: 3,000** (no rows dropped at any step)
+**Rows before cleaning: 3,000. Rows after cleaning: 3,000** (no rows dropped at any step)
 
 ---
 
 ## 7. Known Limitations
 
-- `client_id` is not a reliable unique identifier in the source system — always use `client_row_id` for anything requiring uniqueness.
+- `client_id` is not a reliable unique identifier in the source system. Always use `client_row_id` for anything requiring uniqueness.
 - The dataset includes clients as young as 17; filter explicitly (`age >= 18`) if the intended analysis population is adults only.
-- The precise meaning of `risk_weighting` (a 1–5 scale) is not documented anywhere in the source data or the accompanying dashboard — values are used as provided, without an official definition.
-- No transaction-level or time-series data exists — only a single per-client join date. Trend/time-series analysis is not supported by this dataset as-is.
+- The precise meaning of `risk_weighting` (a 1–5 scale) is not documented anywhere in the source data or the accompanying dashboard, so values are used as provided, without an official definition.
+- No transaction-level or time-series data exists, only a single join date per client. Trend/time-series analysis is not supported by this dataset as-is.
