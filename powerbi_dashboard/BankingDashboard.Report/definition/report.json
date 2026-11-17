@@ -68,16 +68,6 @@
       "type": "RegisteredResources",
       "items": [
         {
-          "name": "bank9609531559429151.png",
-          "path": "bank9609531559429151.png",
-          "type": "Image"
-        },
-        {
-          "name": "GoldIvory_PlusJakarta_theme.json",
-          "path": "GoldIvory_PlusJakarta_theme.json",
-          "type": "CustomTheme"
-        },
-        {
           "name": "bg_01_overview.png",
           "path": "bg_01_overview.png",
           "type": "Image"
@@ -96,6 +86,16 @@
           "name": "bg_04_risk.png",
           "path": "bg_04_risk.png",
           "type": "Image"
+        },
+        {
+          "name": "bg_05_client_data.png",
+          "path": "bg_05_client_data.png",
+          "type": "Image"
+        },
+        {
+          "name": "GoldIvory_PlusJakarta_theme.json",
+          "path": "GoldIvory_PlusJakarta_theme.json",
+          "type": "CustomTheme"
         }
       ]
     },

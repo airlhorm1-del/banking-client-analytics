@@ -57,5 +57,12 @@
         }
       }
     ]
-  }
+  },
+  "visualInteractions": [
+    {
+      "source": "83a568aac13c979ca9b4",
+      "target": "e4fdca443a570c90669f",
+      "type": "DataFilter"
+    }
+  ]
 }

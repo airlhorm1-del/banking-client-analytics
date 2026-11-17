@@ -75,7 +75,7 @@ KPI_X = [236, 573, 910]
 KPI_W, KPI_Y, KPI_H = 322, 175, 111
 
 
-def frame(active, kpi_icons):
+def frame(active, kpi_icons, header_buttons=True):
     h = [box(22, 22, 1235, 964, WHITE, 26)]                      # app panel
     h.append(box(210, 46, 1, 916, DIVIDER, 0))                    # sidebar divider
     h.append(LOGO)                                                # logo
@@ -86,12 +86,13 @@ def frame(active, kpi_icons):
         h.append(icon(name, 58, cy - 8, 16, DARK, 1.7))
     h.append(box(41, 856, 39, 39, DARK, 19.5))                    # initials circle
     h.append(box(41, 908, 151, 54, PANEL, 12))                    # dataset note box
-    h.append(circle(236, 116, 41, DARK, "filter", WHITE, 16))    # header buttons
-    h.append(circle(286, 116, 41, DARK, "search", WHITE, 16))
-    h.append(box(336, 115, 148, 42, GOLD, 21))                    # export pill
-    h.append(icon("download", 357, 129, 15, DARK, 2))
+    if header_buttons:
+        h.append(circle(236, 116, 41, DARK, "filter", WHITE, 16))    # header buttons
+        h.append(circle(286, 116, 41, DARK, "search", WHITE, 16))
+        h.append(box(336, 115, 148, 42, GOLD, 21))                    # export pill
+        h.append(icon("download", 357, 129, 15, DARK, 2))
     h.append(box(779, 52, 453, 43, PANEL, 21.5))                  # slicer bar
-    for x, ic in zip(KPI_X, kpi_icons):                           # KPI cards
+    for x, ic in zip(KPI_X, kpi_icons or []):                     # KPI cards
         h.append(box(x, KPI_Y, KPI_W, KPI_H, PANEL, 18))
         h.append(circle(x + 19, 227, 41, DARK, ic, WHITE, 17))
     return h
@@ -106,7 +107,7 @@ def overview():
         h.append(box(x, 371, w, 100, WHITE, 12))
         h.append(icon(ic, x + w / 2 - 8, 384, 16, GOLD_ICON, 1.8))
     h.append(box(255, 513, 40, 40, DARK, 20))
-    h.append(circle(498, 512, 41, GOLD, "arrow", DARK, 16, 2))
+    h.append(circle(498, 512, 41, GOLD, "chevron", DARK, 15, 2.2))
     # Risk weighting: panel + white toggle track
     h.append(box(236, 585, 322, 269, PANEL, 18))
     h.append(box(422, 603, 117, 32, WHITE, 16))
@@ -150,7 +151,15 @@ def risk():
     return h
 
 
-PAGES = {"bg_01_overview": overview, "bg_02_wealth": wealth, "bg_03_advisors": advisors, "bg_04_risk": risk}
+def client_data():
+    # Search / export page: frame without header buttons or KPI row, one large panel for the table
+    h = frame(-1, None, header_buttons=False)
+    h.append(box(236, 175, 996, 787, PANEL, 18))
+    return h
+
+
+PAGES = {"bg_01_overview": overview, "bg_02_wealth": wealth, "bg_03_advisors": advisors, "bg_04_risk": risk,
+         "bg_05_client_data": client_data}
 
 OUT.mkdir(parents=True, exist_ok=True)
 for name, build in PAGES.items():

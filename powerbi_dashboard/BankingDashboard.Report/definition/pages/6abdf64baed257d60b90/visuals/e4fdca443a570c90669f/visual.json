@@ -1,0 +1,278 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "e4fdca443a570c90669f",
+  "position": {
+    "x": 236,
+    "y": 600,
+    "z": 1025,
+    "height": 254,
+    "width": 322,
+    "tabOrder": 25
+  },
+  "visual": {
+    "visualType": "deneb7E15AEF80B9E4D4F8E12924291ECE89A",
+    "query": {
+      "queryState": {
+        "dataset": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "banking_clients"
+                    }
+                  },
+                  "Property": "Avg Risk Weighting"
+                }
+              },
+              "queryRef": "banking_clients.Avg Risk Weighting",
+              "nativeQueryRef": "Avg Risk Weighting"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "banking_clients"
+                    }
+                  },
+                  "Property": "Avg Products Held"
+                }
+              },
+              "queryRef": "banking_clients.Avg Products Held",
+              "nativeQueryRef": "Avg Products Held"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "vega": [
+        {
+          "properties": {
+            "provider": {
+              "expr": {
+                "Literal": {
+                  "Value": "'vegaLite'"
+                }
+              }
+            },
+            "version": {
+              "expr": {
+                "Literal": {
+                  "Value": "'6.4.3'"
+                }
+              }
+            },
+            "renderMode": {
+              "expr": {
+                "Literal": {
+                  "Value": "'svg'"
+                }
+              }
+            },
+            "jsonSpec": {
+              "expr": {
+                "Literal": {
+                  "Value": "'{\n  \"$schema\": \"https://vega.github.io/schema/vega-lite/v6.json\",\n  \"data\": {\n    \"name\": \"dataset\"\n  },\n  \"width\": 322,\n  \"height\": 254,\n  \"padding\": 0,\n  \"autosize\": {\n    \"type\": \"none\"\n  },\n  \"background\": \"transparent\",\n  \"config\": {\n    \"view\": {\n      \"stroke\": null\n    }\n  },\n  \"transform\": [\n    {\n      \"fold\": [\n        \"Avg Risk Weighting\",\n        \"Avg Products Held\"\n      ],\n      \"as\": [\n        \"key\",\n        \"value\"\n      ]\n    },\n    {\n      \"calculate\": \"datum.key == ''Avg Risk Weighting'' ? ''Risk'' : ''Products''\",\n      \"as\": \"m\"\n    },\n    {\n      \"calculate\": \"datum.m == ''Risk'' ? 5 : 6\",\n      \"as\": \"hi\"\n    },\n    {\n      \"calculate\": \"clamp((datum.value - 1) / (datum.hi - 1), 0, 1)\",\n      \"as\": \"frac\"\n    },\n    {\n      \"calculate\": \"format(datum.value, ''.2f'')\",\n      \"as\": \"label\"\n    },\n    {\n      \"calculate\": \"datum.m == ''Risk'' ? ''avg risk level, scale 1 to 5'' : ''avg products held, scale 1 to 6''\",\n      \"as\": \"caption\"\n    },\n    {\n      \"calculate\": \"datum.m == ''Risk'' ? 188 : 232\",\n      \"as\": \"px1\"\n    },\n    {\n      \"calculate\": \"datum.m == ''Risk'' ? 230 : 301\",\n      \"as\": \"px2\"\n    },\n    {\n      \"calculate\": \"(datum.px1 + datum.px2) / 2\",\n      \"as\": \"pcx\"\n    }\n  ],\n  \"layer\": [\n    {\n      \"transform\": [\n        {\n          \"filter\": {\n            \"param\": \"metric\"\n          }\n        }\n      ],\n      \"mark\": {\n        \"type\": \"rect\",\n        \"cornerRadius\": 13,\n        \"fill\": \"#C9A45C\"\n      },\n      \"encoding\": {\n        \"x\": {\n          \"field\": \"px1\",\n          \"type\": \"quantitative\",\n          \"scale\": null,\n          \"axis\": null\n        },\n        \"x2\": {\n          \"field\": \"px2\"\n        },\n        \"y\": {\n          \"value\": 6\n        },\n        \"y2\": {\n          \"value\": 32\n        }\n      }\n    },\n    {\n      \"transform\": [\n        {\n          \"filter\": {\n            \"param\": \"metric\"\n          }\n        }\n      ],\n      \"mark\": {\n        \"type\": \"text\",\n        \"font\": \"Plus Jakarta Sans\",\n        \"fontSize\": 10.5,\n        \"fontWeight\": 700,\n        \"fill\": \"#17140F\",\n        \"align\": \"center\",\n        \"baseline\": \"middle\"\n      },\n      \"encoding\": {\n        \"x\": {\n          \"field\": \"pcx\",\n          \"type\": \"quantitative\",\n          \"scale\": null,\n          \"axis\": null\n        },\n        \"y\": {\n          \"value\": 19.5\n        },\n        \"text\": {\n          \"field\": \"m\",\n          \"type\": \"nominal\"\n        }\n      }\n    },\n    {\n      \"transform\": [\n        {\n          \"filter\": {\n            \"not\": {\n              \"param\": \"metric\"\n            }\n          }\n        }\n      ],\n      \"mark\": {\n        \"type\": \"text\",\n        \"font\": \"Plus Jakarta Sans\",\n        \"fontSize\": 10.5,\n        \"fontWeight\": 400,\n        \"fill\": \"#2F2B26\",\n        \"align\": \"center\",\n        \"baseline\": \"middle\"\n      },\n      \"encoding\": {\n        \"x\": {\n          \"field\": \"pcx\",\n          \"type\": \"quantitative\",\n          \"scale\": null,\n          \"axis\": null\n        },\n        \"y\": {\n          \"value\": 19.5\n        },\n        \"text\": {\n          \"field\": \"m\",\n          \"type\": \"nominal\"\n        }\n      }\n    },\n    {\n      \"params\": [\n        {\n          \"name\": \"metric\",\n          \"value\": [\n            {\n              \"m\": \"Risk\"\n            }\n          ],\n          \"select\": {\n            \"type\": \"point\",\n            \"fields\": [\n              \"m\"\n            ],\n            \"on\": \"click\",\n            \"toggle\": false,\n            \"clear\": false\n          }\n        }\n      ],\n      \"mark\": {\n        \"type\": \"rect\",\n        \"fill\": \"#FFFFFF\",\n        \"opacity\": 0,\n        \"cursor\": \"pointer\"\n      },\n      \"encoding\": {\n        \"x\": {\n          \"field\": \"px1\",\n          \"type\": \"quantitative\",\n          \"scale\": null,\n          \"axis\": null\n        },\n        \"x2\": {\n          \"field\": \"px2\"\n        },\n        \"y\": {\n          \"value\": 6\n        },\n        \"y2\": {\n          \"value\": 32\n        }\n      }\n    },\n    {\n      \"transform\": [\n        {\n          \"filter\": {\n            \"param\": \"metric\"\n          }\n        },\n        {\n          \"calculate\": \"sequence(0, 36)\",\n          \"as\": \"i\"\n        },\n        {\n          \"flatten\": [\n            \"i\"\n          ]\n        },\n        {\n          \"calculate\": \"(-120 + 240 * datum.i / 35) * PI / 180\",\n          \"as\": \"a\"\n        },\n        {\n          \"calculate\": \"159.5 + 73 * sin(datum.a)\",\n          \"as\": \"x1\"\n        },\n        {\n          \"calculate\": \"164 - 73 * cos(datum.a)\",\n          \"as\": \"y1\"\n        },\n        {\n          \"calculate\": \"159.5 + 94 * sin(datum.a)\",\n          \"as\": \"x2\"\n        },\n        {\n          \"calculate\": \"164 - 94 * cos(datum.a)\",\n          \"as\": \"y2\"\n        },\n        {\n          \"calculate\": \"datum.i % 2 == 0 ? ''#D9BC7E'' : ''#E8D6AE''\",\n          \"as\": \"c\"\n        }\n      ],\n      \"mark\": {\n        \"type\": \"rule\",\n        \"strokeWidth\": 7,\n        \"strokeCap\": \"round\"\n      },\n      \"encoding\": {\n        \"x\": {\n          \"field\": \"x1\",\n          \"type\": \"quantitative\",\n          \"scale\": null,\n          \"axis\": null\n        },\n        \"y\": {\n          \"field\": \"y1\",\n          \"type\": \"quantitative\",\n          \"scale\": null,\n          \"axis\": null\n        },\n        \"x2\": {\n          \"field\": \"x2\"\n        },\n        \"y2\": {\n          \"field\": \"y2\"\n        },\n        \"color\": {\n          \"field\": \"c\",\n          \"type\": \"nominal\",\n          \"scale\": null,\n          \"legend\": null\n        }\n      }\n    },\n    {\n      \"transform\": [\n        {\n          \"filter\": {\n            \"param\": \"metric\"\n          }\n        },\n        {\n          \"calculate\": \"sequence(0, 30)\",\n          \"as\": \"i\"\n        },\n        {\n          \"flatten\": [\n            \"i\"\n          ]\n        },\n        {\n          \"calculate\": \"(-120 + 240 * datum.i / 29) * PI / 180\",\n          \"as\": \"a\"\n        },\n        {\n          \"calculate\": \"159.5 + 51 * sin(datum.a)\",\n          \"as\": \"x1\"\n        },\n        {\n          \"calculate\": \"164 - 51 * cos(datum.a)\",\n          \"as\": \"y1\"\n        },\n        {\n          \"calculate\": \"159.5 + 65 * sin(datum.a)\",\n          \"as\": \"x2\"\n        },\n        {\n          \"calculate\": \"164 - 65 * cos(datum.a)\",\n          \"as\": \"y2\"\n        },\n        {\n          \"calculate\": \"datum.i / 29 <= datum.frac ? ''#17140F'' : ''#E4DFD5''\",\n          \"as\": \"c\"\n        }\n      ],\n      \"mark\": {\n        \"type\": \"rule\",\n        \"strokeWidth\": 4.5,\n        \"strokeCap\": \"round\"\n      },\n      \"encoding\": {\n        \"x\": {\n          \"field\": \"x1\",\n          \"type\": \"quantitative\",\n          \"scale\": null,\n          \"axis\": null\n        },\n        \"y\": {\n          \"field\": \"y1\",\n          \"type\": \"quantitative\",\n          \"scale\": null,\n          \"axis\": null\n        },\n        \"x2\": {\n          \"field\": \"x2\"\n        },\n        \"y2\": {\n          \"field\": \"y2\"\n        },\n        \"color\": {\n          \"field\": \"c\",\n          \"type\": \"nominal\",\n          \"scale\": null,\n          \"legend\": null\n        }\n      }\n    },\n    {\n      \"mark\": {\n        \"type\": \"text\",\n        \"x\": 159.5,\n        \"y\": 175,\n        \"fontSize\": 36,\n        \"fontWeight\": 700,\n        \"fill\": \"#17140F\",\n        \"align\": \"center\",\n        \"baseline\": \"alphabetic\",\n        \"font\": \"Plus Jakarta Sans\"\n      },\n      \"transform\": [\n        {\n          \"filter\": {\n            \"param\": \"metric\"\n          }\n        }\n      ],\n      \"encoding\": {\n        \"text\": {\n          \"field\": \"label\",\n          \"type\": \"nominal\"\n        }\n      }\n    },\n    {\n      \"mark\": {\n        \"type\": \"text\",\n        \"x\": 159.5,\n        \"y\": 197,\n        \"fontSize\": 10.5,\n        \"fontWeight\": 400,\n        \"fill\": \"#6B665D\",\n        \"align\": \"center\",\n        \"baseline\": \"alphabetic\",\n        \"font\": \"Plus Jakarta Sans\"\n      },\n      \"transform\": [\n        {\n          \"filter\": {\n            \"param\": \"metric\"\n          }\n        }\n      ],\n      \"encoding\": {\n        \"text\": {\n          \"field\": \"caption\",\n          \"type\": \"nominal\"\n        }\n      }\n    },\n    {\n      \"mark\": {\n        \"type\": \"circle\",\n        \"x\": 23,\n        \"y\": 50,\n        \"size\": 45,\n        \"fill\": \"#17140F\",\n        \"opacity\": 1\n      }\n    },\n    {\n      \"mark\": {\n        \"type\": \"text\",\n        \"x\": 32,\n        \"y\": 54,\n        \"fontSize\": 10.5,\n        \"fontWeight\": 400,\n        \"fill\": \"#6B665D\",\n        \"align\": \"left\",\n        \"baseline\": \"alphabetic\",\n        \"font\": \"Plus Jakarta Sans\",\n        \"text\": \"Average level\"\n      }\n    },\n    {\n      \"mark\": {\n        \"type\": \"circle\",\n        \"x\": 115,\n        \"y\": 50,\n        \"size\": 45,\n        \"fill\": \"#D9BC7E\",\n        \"opacity\": 1\n      }\n    },\n    {\n      \"mark\": {\n        \"type\": \"text\",\n        \"x\": 125,\n        \"y\": 54,\n        \"fontSize\": 10.5,\n        \"fontWeight\": 400,\n        \"fill\": \"#6B665D\",\n        \"align\": \"left\",\n        \"baseline\": \"alphabetic\",\n        \"font\": \"Plus Jakarta Sans\",\n        \"text\": \"Full scale\"\n      }\n    }\n  ]\n}'"
+                }
+              }
+            },
+            "jsonConfig": {
+              "expr": {
+                "Literal": {
+                  "Value": "'{}'"
+                }
+              }
+            },
+            "enableTooltips": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "enableContextMenu": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "enableSelection": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "enableHighlight": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "stateManagement": [
+        {
+          "properties": {
+            "viewportHeight": {
+              "expr": {
+                "Literal": {
+                  "Value": "254D"
+                }
+              }
+            },
+            "viewportWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "322D"
+                }
+              }
+            },
+            "supportFieldConfiguration": {
+              "expr": {
+                "Literal": {
+                  "Value": "'{\"Avg Risk Weighting\":{\"highlight\":false,\"highlightStatus\":false,\"highlightComparator\":false,\"format\":true,\"formatted\":true,\"names\":false},\"Avg Products Held\":{\"highlight\":false,\"highlightStatus\":false,\"highlightComparator\":false,\"format\":true,\"formatted\":true,\"names\":false}}'"
+                }
+              }
+            },
+            "denebMetaVersion": {
+              "expr": {
+                "Literal": {
+                  "Value": "'2'"
+                }
+              }
+            },
+            "consolidateFieldParameters": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "developer": [
+        {
+          "properties": {
+            "version": {
+              "expr": {
+                "Literal": {
+                  "Value": "'2.0.1.0'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "border": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "visualHeader": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "dropShadow": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "padding": [
+        {
+          "properties": {
+            "top": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "bottom": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "left": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "right": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}
