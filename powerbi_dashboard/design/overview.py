@@ -448,6 +448,19 @@ ad.add("fee structure", 742, 522, 490, 213, html("Fee Structure HTML"))
 ad.add("age bands", 742, 751, 490, 211, html("Age Band Income HTML"))
 ad.write()
 
+# ------------------------------------------------------------------ Risk Drivers page
+rk = Page(RISK)
+sidebar_and_header(rk, RISK)
+rk.add("title", 236, 49, 440, 34, textbox([("Risk Drivers", 25, INK, "Plus Jakarta Sans ExtraBold", False, "left")]))
+rk.add("subtitle", 236, 86, 560, 20, html("Risk Subtitle HTML"))
+rk.add("kpi average", 236, 175, 322, 111, html("KPI Risk HTML"))
+rk.add("kpi high share", 573, 175, 322, 111, html("Risk KPI High Share HTML"))
+rk.add("kpi high value", 910, 175, 322, 111, html("Risk KPI High Value HTML"))
+rk.add("income by risk", 236, 304, 490, 334, html("Income By Risk HTML"))
+rk.add("clients by risk", 236, 654, 490, 308, html("Clients By Risk HTML"))
+rk.add("all drivers", 742, 304, 490, 658, html("All Risk Drivers HTML"))
+rk.write()
+
 # ------------------------------------------------------------------ Client data page (search + export)
 page_dir = PAGES / DATA_PAGE
 page_dir.mkdir(parents=True, exist_ok=True)

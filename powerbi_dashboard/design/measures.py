@@ -633,6 +633,167 @@ RETURN
         & FORMAT ( COALESCE ( _over35, 0 ), "0%" ) & " of the total estimated income.</div></div>"
 """
 
+# ================================================================ Risk Drivers page
+LEVELS = 'SELECTCOLUMNS ( GENERATESERIES ( 1, 5, 1 ), "Order", [Value] )'
+
+
+def level_bars(left):
+    """Mini columns per risk level with levels 4-5 highlighted (uses _vals and _max)."""
+    return f"""CONCATENATEX ( _vals,
+        VAR _h = ROUND ( DIVIDE ( [@n], _max ) * 42, 1 )
+        RETURN "<rect x='" & FORMAT ( ( [Order] - 1 ) * 15.5, "0.0" ) & "' y='" & FORMAT ( 42 - _h, "0.0" )
+            & "' width='11' height='" & FORMAT ( _h, "0.0" ) & "' rx='2' fill='" & IF ( [Order] >= 4, "{GOLD_BAR}", "{LIGHT_BAR}" ) & "'/>",
+        "", [Order], ASC )"""
+
+
+MEASURES["Risk Subtitle HTML"] = f"""
+-- Risk Drivers page subtitle (follows the client-type pills)
+{s(f"<div style='{FONT}font-size:12.5px;line-height:16px;color:#5E5A52;white-space:nowrap;'>")}
+    & FORMAT ( [Total Clients], "#,0" ) & " clients · what moves the risk weighting, from 1 (low) to 5 (high)</div>"
+"""
+
+MEASURES["Risk KPI High Share HTML"] = f"""
+-- KPI card: share of clients at risk level 4-5, how many, and clients per level
+VAR _hiN = CALCULATE ( [Total Clients], banking_clients[risk_weighting] >= 4 )
+VAR _vals = ADDCOLUMNS ( {LEVELS}, "@n", VAR _l = [Order] RETURN CALCULATE ( [Total Clients], banking_clients[risk_weighting] = _l ) )
+VAR _max = MAXX ( _vals, [@n] )
+VAR _bars = {level_bars(244)}
+RETURN
+    {s(KPI_WRAP + KPI_LABEL("Clients at risk level 4–5") + KPI_VALUE)} & FORMAT ( COALESCE ( [High Risk Clients %], 0 ), "0.0%" ) & "</div>"
+        & {s(KPI_NOTE_GREY)} & FORMAT ( COALESCE ( _hiN, 0 ), "#,0" ) & "<br>clients</div>"
+        & "<svg style='position:absolute;left:244px;top:24px;' width='73' height='42' viewBox='0 0 73 42'>" & _bars & "</svg>"
+        & {s(CAPTION(244, 68) + "Clients by level,<br>4–5 highlighted</div></div>")}
+"""
+
+MEASURES["Risk KPI High Value HTML"] = f"""
+-- KPI card: relationship value held by level 4-5 clients, its share of the book, value per level
+VAR _v = COALESCE ( [High Risk Value], 0 )
+VAR _share = DIVIDE ( _v, [Total Relationship Value] )
+VAR _vals = ADDCOLUMNS ( {LEVELS}, "@n", VAR _l = [Order] RETURN CALCULATE ( [Total Relationship Value], banking_clients[risk_weighting] = _l ) )
+VAR _max = MAXX ( _vals, [@n] )
+VAR _bars = {level_bars(244)}
+RETURN
+    {s(KPI_WRAP + KPI_LABEL("Value held at level 4–5") + KPI_VALUE)} & {amt("_v")} & "</div>"
+        & {s(KPI_NOTE_AT(196))} & FORMAT ( COALESCE ( _share, 0 ), "0%" ) & " of<br>book</div>"
+        & "<svg style='position:absolute;left:244px;top:24px;' width='73' height='42' viewBox='0 0 73 42'>" & _bars & "</svg>"
+        & {s(CAPTION(244, 68) + "Value by level,<br>4–5 highlighted</div></div>")}
+"""
+
+MEASURES["Income By Risk HTML"] = f"""
+-- Gold panel: average estimated income per risk level; the title only says "every level" if that is true
+VAR _vals = ADDCOLUMNS ( {LEVELS}, "@n", VAR _l = [Order] RETURN CALCULATE ( [Avg Estimated Income], banking_clients[risk_weighting] = _l ) )
+VAR _max = MAXX ( _vals, [@n] )
+VAR _rises =
+    COUNTROWS ( FILTER ( _vals,
+        VAR _o = [Order]
+        VAR _cur = [@n]
+        VAR _next = MAXX ( FILTER ( _vals, [Order] = _o + 1 ), [@n] )
+        RETURN _o < 5 && NOT ISBLANK ( _next ) && _next > _cur ) )
+VAR _title =
+    SWITCH ( TRUE (),
+        _rises = 4, "Average income climbs at every risk level",
+        _rises >= 3, "Average income mostly rises with risk level",
+        "Average income by risk level" )
+VAR _cols =
+    CONCATENATEX ( _vals,
+        VAR _x = 4 + ( [Order] - 1 ) * 96
+        VAR _h = ROUND ( DIVIDE ( [@n], _max ) * 140, 1 )
+        RETURN
+            "<rect x='" & _x & "' y='" & FORMAT ( 168 - _h, "0.0" ) & "' width='60' height='" & FORMAT ( _h, "0.0" ) & "' rx='7' fill='{INK}'/>"
+            & "<text x='" & ( _x + 30 ) & "' y='" & FORMAT ( 168 - _h - 9, "0.0" ) & "' text-anchor='middle' {SVG_FONT} font-size='12.5' font-weight='700' fill='{INK}'>"
+                & {amt("[@n]")} & "</text>"
+            & "<text x='" & ( _x + 30 ) & "' y='188' text-anchor='middle' {SVG_FONT} font-size='11' fill='{INK}'>Level " & [Order] & "</text>",
+        "", [Order], ASC )
+RETURN
+    {s(f"<div style='position:relative;width:490px;height:334px;{FONT}color:{INK};'>"
+       + box(19, 20, "font-size:10.5px;line-height:14px;font-weight:700;letter-spacing:1.6px;white-space:nowrap;") + "INCOME BY RISK LEVEL</div>"
+       + box(19, 40, "font-size:21px;line-height:26px;font-weight:800;white-space:nowrap;"))} & _title & "</div>"
+        & {s(box(19, 70, "font-size:11.5px;line-height:15px;font-weight:500;white-space:nowrap;") + "Average estimated income per client, from level 1 (lowest risk) to level 5</div>"
+             + "<svg style='position:absolute;left:19px;top:112px;' width='452' height='200' viewBox='0 0 452 200'>"
+             + "<line x1='0' y1='168.5' x2='452' y2='168.5' stroke='#8F7337' stroke-opacity='0.35' stroke-width='1'/>")}
+        & _cols & "</svg></div>"
+"""
+
+MEASURES["Clients By Risk HTML"] = f"""
+-- Left bottom panel: clients per risk level, levels 4-5 in black, with their share of clients and value
+VAR _vals = ADDCOLUMNS ( {LEVELS}, "@n", VAR _l = [Order] RETURN CALCULATE ( [Total Clients], banking_clients[risk_weighting] = _l ) )
+VAR _max = MAXX ( _vals, [@n] )
+VAR _hiN = CALCULATE ( [Total Clients], banking_clients[risk_weighting] >= 4 )
+VAR _hiShare = DIVIDE ( COALESCE ( [High Risk Value], 0 ), [Total Relationship Value] )
+VAR _cols =
+    CONCATENATEX ( _vals,
+        VAR _x = 4 + ( [Order] - 1 ) * 96
+        VAR _h = ROUND ( DIVIDE ( [@n], _max ) * 128, 1 )
+        RETURN
+            "<rect x='" & _x & "' y='" & FORMAT ( 160 - _h, "0.0" ) & "' width='58' height='" & FORMAT ( _h, "0.0" )
+                & "' rx='7' fill='" & IF ( [Order] >= 4, "{INK}", "{GOLD_BAR}" ) & "'/>"
+            & "<text x='" & ( _x + 29 ) & "' y='" & FORMAT ( 160 - _h - 9, "0.0" ) & "' text-anchor='middle' {SVG_FONT} font-size='12.5' font-weight='700' fill='{INK}'>"
+                & FORMAT ( COALESCE ( [@n], 0 ), "#,0" ) & "</text>"
+            & "<text x='" & ( _x + 29 ) & "' y='180' text-anchor='middle' {SVG_FONT} font-size='11' fill='{INK2}'>Level " & [Order] & "</text>",
+        "", [Order], ASC )
+RETURN
+    {s(f"<div style='position:relative;width:490px;height:308px;{FONT}color:{INK};'>"
+       + box(20, 18, TITLE) + "Clients by risk level</div>"
+       + box(20, 41, f"font-size:10.5px;line-height:14px;color:{GREY};white-space:nowrap;") + "Number of clients at each risk weighting</div>"
+       + "<div style='position:absolute;right:20px;top:20px;padding:0 12px;height:25px;line-height:25px;border-radius:12.5px;background:#FFFFFF;font-size:10.5px;font-weight:700;white-space:nowrap;'>Level 4–5: ")}
+        & FORMAT ( COALESCE ( _hiN, 0 ), "#,0" ) & " clients · " & FORMAT ( COALESCE ( [High Risk Clients %], 0 ), "0.0%" ) & "</div>"
+        & "<svg style='position:absolute;left:20px;top:78px;' width='450' height='190' viewBox='0 0 450 190'>"
+        & "<line x1='0' y1='160.5' x2='450' y2='160.5' stroke='#E2DCD0' stroke-width='1'/>" & _cols & "</svg>"
+        & {s(box(20, 278, "font-size:10.5px;line-height:15px;color:#4A463F;white-space:nowrap;") + "Clients at level 4 and 5 hold ")}
+        & FORMAT ( COALESCE ( _hiShare, 0 ), "0.0%" ) & " of all relationship value.</div></div>"
+"""
+
+DRIVERS12 = DRIVERS[:7] + [("savings", "Savings", "saving_accounts"), ("deposits", "Deposits", "bank_deposits")] + DRIVERS[7:] + [
+    ("cardcount", "Number of credit cards", "amount_of_credit_cards")]
+X_SWITCH12 = "SWITCH ( _k, " + ", ".join(f'"{k}", banking_clients[{c}]' for k, _, c in DRIVERS12) + " )"
+DRIVER_ROWS12 = ", ".join(f'{{ "{k}", "{lab}" }}' for k, lab, _ in DRIVERS12)
+
+MEASURES["All Risk Drivers HTML"] = f"""
+-- Right panel: Pearson correlation of all 12 client attributes with risk weighting (live for the selection),
+-- strongest first, plus the key finding box at the bottom.
+{SEGMENT}
+VAR _ybar = AVERAGE ( banking_clients[risk_weighting] )
+VAR _syy = SUMX ( banking_clients, ( banking_clients[risk_weighting] - _ybar ) ^ 2 )
+VAR _drivers = DATATABLE ( "Key", STRING, "Label", STRING, {{ {DRIVER_ROWS12} }} )
+VAR _withR =
+    ADDCOLUMNS ( _drivers, "@r",
+        VAR _k = [Key]
+        VAR _xbar = AVERAGEX ( banking_clients, {X_SWITCH12} )
+        VAR _sxy = SUMX ( banking_clients, ( {X_SWITCH12} - _xbar ) * ( banking_clients[risk_weighting] - _ybar ) )
+        VAR _sxx = SUMX ( banking_clients, ( {X_SWITCH12} - _xbar ) ^ 2 )
+        RETURN DIVIDE ( _sxy, SQRT ( _sxx * _syy ) ) )
+VAR _ranked = ADDCOLUMNS ( _withR, "@rank", RANKX ( _withR, [@r], , DESC, DENSE ) )
+VAR _rows =
+    CONCATENATEX ( _ranked,
+        VAR _r = [@r]
+        VAR _top = 80 + ( [@rank] - 1 ) * 37
+        VAR _w = MIN ( 452, MAX ( 4, ROUND ( DIVIDE ( MAX ( _r, 0 ), 0.75 ) * 452, 0 ) ) )
+        VAR _txt = IF ( ABS ( _r ) < 0.005, "0.00", FORMAT ( _r, "0.00" ) )
+        RETURN
+            "<div style='position:absolute;left:19px;top:" & _top & "px;font-size:11.5px;line-height:15px;color:{INK2};white-space:nowrap;'>" & [Label] & "</div>"
+            & "<div style='position:absolute;right:19px;top:" & _top & "px;font-size:11.5px;line-height:15px;font-weight:700;'>" & _txt & "</div>"
+            & {ROW_BAR(19, "( _top + 17.5 )", 452, 7, f'IF ( _r >= 0.45, "{INK}", "{GOLD_BAR}" )', "_w")},
+        "", [@rank], ASC )
+VAR _lead = MAXX ( TOPN ( 1, _withR, [@r], DESC ), [Label] )
+VAR _leadR = MAXX ( _withR, [@r] )
+VAR _ageR = MAXX ( FILTER ( _withR, [Key] = "age" ), [@r] )
+VAR _propR = MAXX ( FILTER ( _withR, [Key] = "property" ), [@r] )
+VAR _fmt = "0.00"
+RETURN
+    {s(f"<div style='position:relative;width:490px;height:658px;{FONT}color:{INK};'>"
+       + box(19, 18, TITLE) + "All 12 risk drivers</div>"
+       + "<div style='position:absolute;right:19px;top:20px;padding:0 12px;height:25px;line-height:25px;border-radius:12.5px;background:#FFFFFF;font-size:10.5px;font-weight:700;'>Correlation r</div>"
+       + box(19, 41, f"font-size:10.5px;line-height:14px;color:{GREY};white-space:nowrap;")
+       + "How strongly each client attribute moves with risk weighting (Pearson r)</div>")}
+        & _rows
+        & {s(box(36, 552, "font-size:9.5px;line-height:13px;font-weight:700;letter-spacing:1.2px;color:#DCC994;white-space:nowrap;") + "KEY FINDING</div>"
+             + box(36, 570, "font-size:14px;line-height:19px;font-weight:600;color:#FFFFFF;", 420)
+             + "Risk weighting rises with wealth. Age and property count show no link.</div>"
+             + box(36, 612, "font-size:10.5px;line-height:14px;color:#D9D4CB;white-space:nowrap;"))}
+        & "Strongest: " & _lead & " (r = " & FORMAT ( _leadR, _fmt ) & ") · age r = " & IF ( ABS ( _ageR ) < 0.005, "0.00", FORMAT ( _ageR, _fmt ) )
+        & " · properties r = " & IF ( ABS ( _propR ) < 0.005, "0.00", FORMAT ( _propR, _fmt ) ) & "</div></div>"
+"""
+
 # Earlier helpers from this phase that the Deneb switch and pills made unnecessary (removed if present)
 RETIRED = ["Gauge Value", "Gauge Min", "Gauge Max", "Gauge Label", "Gauge Caption", "All Clients Pill Fill"]
 
