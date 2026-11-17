@@ -1,0 +1,5 @@
+expression DataFolder = "C:\Users\user\OneDrive\Desktop\Arranged desktop\banking-client-analytics\clean\" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 3c1d2b7e-8a4f-4e21-9c6d-5b0f7e2a1d93
+
+	annotation PBI_ResultType = Text
+

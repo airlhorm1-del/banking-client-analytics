@@ -23,7 +23,7 @@ table risk_correlations
 		mode: import
 		source =
 				let
-				    Source = Csv.Document(File.Contents("C:\Users\user\OneDrive\Desktop\DATA ANALYTICS AI\clean\risk_correlations.csv"),[Delimiter=",", Columns=2, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    Source = Csv.Document(File.Contents(DataFolder & "risk_correlations.csv"),[Delimiter=",", Columns=2, Encoding=1252, QuoteStyle=QuoteStyle.None]),
 				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
 				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"driver", type text}, {"correlation_with_risk", type number}})
 				in

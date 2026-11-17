@@ -9,7 +9,7 @@ model Model
 
 annotation __PBI_TimeIntelligenceEnabled = 1
 
-annotation PBI_QueryOrder = ["banking_clients","risk_correlations"]
+annotation PBI_QueryOrder = ["DataFolder","banking_clients","risk_correlations"]
 
 annotation PBI_ProTooling = ["DevMode"]
 
