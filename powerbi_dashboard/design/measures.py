@@ -54,7 +54,7 @@ RETURN
 """
 
 # ---------------------------------------------------------------- KPI cards (322 x 111 each)
-KPI_WRAP = f"<div style='position:relative;width:322px;height:111px;{FONT}color:{INK};'>"
+KPI_WRAP = f"<div style='position:relative;width:322px;height:111px;overflow:hidden;{FONT}color:{INK};'>"
 KPI_LABEL = lambda text: box(19, 24, f"font-size:12.5px;line-height:16px;font-weight:500;color:{INK2};white-space:nowrap;") + text + "</div>"
 KPI_VALUE = box(70, 57, "font-size:27px;line-height:34px;font-weight:700;letter-spacing:-0.3px;white-space:nowrap;")
 KPI_NOTE = box(176, 60, f"font-size:11.5px;line-height:15px;font-weight:600;color:{GREEN};white-space:nowrap;")
@@ -278,6 +278,180 @@ RETURN
              + box(36, 611, "font-size:10.5px;line-height:14px;color:#D9D4CB;white-space:nowrap;"))}
         & "Income r = " & FORMAT ( _rIncome, _fmt ) & ", age r = " & _ageTxt & " for "
         & IF ( _segment = "All clients", "all clients", _segment ) & ".</div></div>"
+"""
+
+# ================================================================ Wealth & Cross-sell page
+KPI_NOTE_GREY = box(160, 60, f"font-size:11px;line-height:15px;font-weight:600;color:{GREY};white-space:nowrap;")
+KPI_NOTE_AT = lambda left: box(left, 60, f"font-size:11px;line-height:15px;font-weight:600;color:{GREEN};white-space:nowrap;")
+TIERS = 'DATATABLE ( "Tier", STRING, "Order", INTEGER, { { "Jade", 1 }, { "Silver", 2 }, { "Gold", 3 }, { "Platinum", 4 } } )'
+QUINTILES = ('DATATABLE ( "Quintile", STRING, "Label", STRING, "Order", INTEGER, { { "Top 20%", "Top 20%", 1 }, '
+             '{ "4th", "4th", 2 }, { "3rd", "3rd", 3 }, { "2nd", "2nd", 4 }, { "Bottom 20%", "Bottom 20%", 5 } } )')
+SVG_FONT = "font-family='Plus Jakarta Sans, Segoe UI, sans-serif'"
+
+
+def mini_bars(table_var, n_bars, width, step, height=42, order_col="[Order]"):
+    """DAX CONCATENATEX that draws small columns (tallest one highlighted) from a table with [@n]."""
+    return f"""CONCATENATEX ( {table_var},
+        VAR _h = ROUND ( DIVIDE ( [@n], _max ) * {height}, 1 )
+        RETURN "<rect x='" & FORMAT ( ( {order_col} - 1 ) * {step}, "0.0" ) & "' y='" & FORMAT ( {height} - _h, "0.0" )
+            & "' width='{width}' height='" & FORMAT ( _h, "0.0" ) & "' rx='2' fill='"
+            & IF ( [@n] = _max, "{GOLD_BAR}", "{LIGHT_BAR}" ) & "'/>",
+        "", {order_col}, ASC )"""
+
+
+MEASURES["Wealth Subtitle HTML"] = f"""
+-- Wealth page subtitle (follows the client-type pills)
+{s(f"<div style='{FONT}font-size:12.5px;line-height:16px;color:#5E5A52;white-space:nowrap;'>")}
+    & FORMAT ( [Total Clients], "#,0" ) & " clients · where value sits and how deep cross-sell goes</div>"
+"""
+
+MEASURES["Wealth KPI Value HTML"] = f"""
+-- KPI card: average relationship value, the median, and the average per loyalty tier
+VAR _avg = [Avg Relationship Value]
+VAR _median = MEDIAN ( banking_clients[total_relationship_value] )
+VAR _vals = ADDCOLUMNS ( {TIERS}, "@n", VAR _t = [Tier] RETURN CALCULATE ( [Avg Relationship Value], banking_clients[loyalty_classification] = _t ) )
+VAR _max = MAXX ( _vals, [@n] )
+VAR _bars = {mini_bars("_vals", 4, 12, 18)}
+RETURN
+    {s(KPI_WRAP + KPI_LABEL("Average relationship value") + KPI_VALUE)} & {amt("_avg")} & "</div>"
+        & {s(KPI_NOTE_GREY)} & "median<br>" & {amt("_median")} & "</div>"
+        & "<svg style='position:absolute;left:236px;top:24px;' width='66' height='42' viewBox='0 0 66 42'>" & _bars & "</svg>"
+        & {s(CAPTION(236, 68) + "Avg value by tier,<br>Jade → Platinum</div></div>")}
+"""
+
+MEASURES["Wealth KPI Top Share HTML"] = f"""
+-- KPI card: share of value held by the top 20%, how many times the bottom 20%, share per quintile
+VAR _all = CALCULATE ( [Total Relationship Value], REMOVEFILTERS ( banking_clients[value_quintile] ) )
+VAR _vals = ADDCOLUMNS ( {QUINTILES}, "@n", VAR _q = [Quintile] RETURN DIVIDE ( CALCULATE ( [Total Relationship Value], banking_clients[value_quintile] = _q ), _all ) )
+VAR _max = MAXX ( _vals, [@n] )
+VAR _top = MAXX ( FILTER ( _vals, [Order] = 1 ), [@n] )
+VAR _bottom = MAXX ( FILTER ( _vals, [Order] = 5 ), [@n] )
+VAR _bars = {mini_bars("_vals", 5, 11, 15.5)}
+RETURN
+    {s(KPI_WRAP + KPI_LABEL("Top 20% share of value") + KPI_VALUE)} & FORMAT ( COALESCE ( _top, 0 ), "0.0%" ) & "</div>"
+        & {s(KPI_NOTE_AT(166))} & IF ( ISBLANK ( _bottom ), "", FORMAT ( DIVIDE ( _top, _bottom ), "0.0" ) & "×<br>bottom 20%" ) & "</div>"
+        & "<svg style='position:absolute;left:244px;top:24px;' width='73' height='42' viewBox='0 0 73 42'>" & _bars & "</svg>"
+        & {s(CAPTION(244, 68) + "Share by<br>quintile</div></div>")}
+"""
+
+MEASURES["Wealth KPI Products HTML"] = f"""
+-- KPI card: average products held, share holding all 6, clients by number of products held
+VAR _avg = [Avg Products Held]
+VAR _all6 = [Clients With All 6 Products %]
+VAR _vals = ADDCOLUMNS ( SELECTCOLUMNS ( GENERATESERIES ( 1, 6, 1 ), "Order", [Value] ), "@n",
+    VAR _p = [Order] RETURN CALCULATE ( [Total Clients], banking_clients[product_count] = _p ) )
+VAR _max = MAXX ( _vals, [@n] )
+VAR _bars = {mini_bars("_vals", 6, 9, 12.5)}
+RETURN
+    {s(KPI_WRAP + KPI_LABEL("Average products held") + KPI_VALUE)} & FORMAT ( _avg, "0.00" ) & "</div>"
+        & {s(KPI_NOTE_AT(166))} & FORMAT ( COALESCE ( _all6, 0 ), "0.0%" ) & "<br>hold all 6</div>"
+        & "<svg style='position:absolute;left:244px;top:24px;' width='72' height='42' viewBox='0 0 72 42'>" & _bars & "</svg>"
+        & {s(CAPTION(244, 68) + "Clients by<br>products, 1 → 6</div></div>")}
+"""
+
+MEASURES["Value By Quintile HTML"] = f"""
+-- Left top panel: share of relationship value per client quintile, as columns (top 20% in black)
+VAR _all = CALCULATE ( [Total Relationship Value], REMOVEFILTERS ( banking_clients[value_quintile] ) )
+VAR _vals = ADDCOLUMNS ( {QUINTILES}, "@n", VAR _q = [Quintile] RETURN DIVIDE ( CALCULATE ( [Total Relationship Value], banking_clients[value_quintile] = _q ), _all ) )
+VAR _max = MAXX ( _vals, [@n] )
+VAR _top = MAXX ( FILTER ( _vals, [Order] = 1 ), [@n] )
+VAR _bottom = MAXX ( FILTER ( _vals, [Order] = 5 ), [@n] )
+VAR _cols =
+    CONCATENATEX ( _vals,
+        VAR _x = 4 + ( [Order] - 1 ) * 94
+        VAR _h = ROUND ( DIVIDE ( [@n], _max ) * 160, 1 )
+        RETURN
+            "<rect x='" & _x & "' y='" & FORMAT ( 196 - _h, "0.0" ) & "' width='56' height='" & FORMAT ( _h, "0.0" )
+                & "' rx='7' fill='" & IF ( [Order] = 1, "{INK}", "{GOLD_BAR}" ) & "'/>"
+            & "<text x='" & ( _x + 28 ) & "' y='" & FORMAT ( 196 - _h - 9, "0.0" ) & "' text-anchor='middle' {SVG_FONT} font-size='12.5' font-weight='700' fill='{INK}'>"
+                & FORMAT ( COALESCE ( [@n], 0 ), "0.0%" ) & "</text>"
+            & "<text x='" & ( _x + 28 ) & "' y='218' text-anchor='middle' {SVG_FONT} font-size='11' fill='{INK2}'>" & [Label] & "</text>",
+        "", [Order], ASC )
+RETURN
+    {s(f"<div style='position:relative;width:490px;height:350px;{FONT}color:{INK};'>"
+       + box(20, 18, TITLE) + "Where the value sits</div>"
+       + box(20, 41, f"font-size:10.5px;line-height:14px;color:{GREY};white-space:nowrap;") + "Share of total relationship value by client quintile</div>"
+       + "<div style='position:absolute;right:20px;top:20px;padding:0 12px;height:25px;line-height:25px;border-radius:12.5px;background:#FFFFFF;font-size:10.5px;font-weight:700;white-space:nowrap;'>Top 20% = ")}
+        & IF ( ISBLANK ( _bottom ), "–", FORMAT ( DIVIDE ( _top, _bottom ), "0.0" ) ) & "× bottom 20%</div>"
+        & "<svg style='position:absolute;left:20px;top:78px;' width='450' height='230' viewBox='0 0 450 230'>"
+        & "<line x1='0' y1='196.5' x2='450' y2='196.5' stroke='#E2DCD0' stroke-width='1'/>" & _cols & "</svg>"
+        & {s(box(20, 318, f"font-size:10px;line-height:14px;color:{GREY};white-space:nowrap;") + "Quintiles rank all 3,000 clients by relationship value, so each fifth is 600 clients.</div></div>")}
+"""
+
+MEASURES["Tier Value HTML"] = f"""
+-- Gold panel: average relationship value per loyalty tier; the title checks the data before claiming it
+VAR _vals = ADDCOLUMNS ( {TIERS}, "@n", VAR _t = [Tier] RETURN CALCULATE ( [Avg Relationship Value], banking_clients[loyalty_classification] = _t ) )
+VAR _max = MAXX ( _vals, [@n] )
+VAR _plat = MAXX ( FILTER ( _vals, [Tier] = "Platinum" ), [@n] )
+VAR _jade = MAXX ( FILTER ( _vals, [Tier] = "Jade" ), [@n] )
+VAR _bestOther = MAXX ( FILTER ( _vals, [Tier] <> "Platinum" ), [@n] )
+VAR _title = IF ( _plat <= _bestOther, "Higher tiers don't hold more value", "Platinum clients hold the most value" )
+VAR _rows =
+    CONCATENATEX ( _vals,
+        VAR _top = 152 + ( [Order] - 1 ) * 44
+        VAR _w = ROUND ( DIVIDE ( [@n], _max ) * 230, 0 )
+        RETURN
+            "<div style='position:absolute;left:19px;top:" & _top & "px;width:452px;height:34px;border-radius:13px;background:#FFFFFF;'>"
+            & "<div style='position:absolute;left:16px;top:9px;font-size:12px;line-height:16px;font-weight:600;'>" & [Tier] & "</div>"
+            & "<div style='position:absolute;left:110px;top:13px;width:230px;height:8px;border-radius:4px;background:#EFE9DD;overflow:hidden;'>"
+            & "<div style='height:8px;border-radius:4px;background:{INK};width:" & _w & "px;'></div></div>"
+            & "<div style='position:absolute;right:16px;top:9px;font-size:12px;line-height:16px;font-weight:700;'>" & {amt("[@n]")} & "</div></div>",
+        "", [Order], ASC )
+RETURN
+    {s(f"<div style='position:relative;width:490px;height:350px;{FONT}color:{INK};'>"
+       + box(19, 20, "font-size:10.5px;line-height:14px;font-weight:700;letter-spacing:1.6px;white-space:nowrap;") + "LOYALTY TIERS</div>"
+       + box(19, 42, "", 445) + "<div style='font-size:21px;line-height:26px;font-weight:800;'>")} & _title & "</div>"
+        & "<div style='margin-top:8px;font-size:11.5px;line-height:15px;font-weight:500;'>Average relationship value per client. Platinum clients average "
+        & {amt("_plat")} & ", Jade clients " & {amt("_jade")} & ".</div></div>"
+        & _rows & "</div>"
+"""
+
+MEASURES["Tier Depth HTML"] = f"""
+-- Left bottom panel: cross-sell depth per loyalty tier (products per 100K income, average products, share holding all 6)
+VAR _vals =
+    ADDCOLUMNS ( {TIERS},
+        "@p100", VAR _t = [Tier] RETURN CALCULATE ( [Avg Products per 100K Income], banking_clients[loyalty_classification] = _t ),
+        "@prod", VAR _t = [Tier] RETURN CALCULATE ( [Avg Products Held], banking_clients[loyalty_classification] = _t ),
+        "@all6", VAR _t = [Tier] RETURN CALCULATE ( [Clients With All 6 Products %], banking_clients[loyalty_classification] = _t ) )
+VAR _cards =
+    CONCATENATEX ( _vals,
+        VAR _left = 20 + ( [Order] - 1 ) * 115
+        RETURN
+            "<div style='position:absolute;left:" & _left & "px;top:74px;width:103px;height:150px;border-radius:12px;background:#FFFFFF;text-align:center;'>"
+            & "<div style='margin-top:16px;font-size:12px;line-height:16px;font-weight:700;'>" & [Tier] & "</div>"
+            & "<div style='margin-top:10px;font-size:25px;line-height:30px;font-weight:800;'>" & FORMAT ( [@p100], "0.00" ) & "</div>"
+            & "<div style='font-size:9.5px;line-height:13px;color:{GREY};'>products per<br>100K income</div>"
+            & "<div style='margin:10px auto 0;width:60px;height:1px;background:#EAE4D8;'></div>"
+            & "<div style='margin-top:9px;font-size:10px;line-height:14px;color:{INK2};'>avg " & FORMAT ( [@prod], "0.00" ) & " products</div>"
+            & "<div style='font-size:10px;line-height:14px;color:{GREY};'>" & FORMAT ( COALESCE ( [@all6], 0 ), "0.0%" ) & " hold all 6</div></div>",
+        "", [Order], ASC )
+RETURN
+    {s(f"<div style='position:relative;width:490px;height:292px;{FONT}color:{INK};'>"
+       + box(20, 18, TITLE) + "Cross-sell depth by tier</div>"
+       + box(20, 41, f"font-size:10.5px;line-height:14px;color:{GREY};white-space:nowrap;") + "Products held per 100K of estimated income, by loyalty tier</div>")}
+        & _cards
+        & {s(box(20, 240, f"font-size:10.5px;line-height:15px;color:#4A463F;", 450)
+             + "Every tier holds close to 6 products, so cross-sell depth barely changes from tier to tier.</div></div>")}
+"""
+
+MEASURES["Wealth Finding HTML"] = f"""
+-- Dark panel: key finding with live numbers for the current selection
+{SEGMENT}
+VAR _all = CALCULATE ( [Total Relationship Value], REMOVEFILTERS ( banking_clients[value_quintile] ) )
+VAR _top = DIVIDE ( CALCULATE ( [Total Relationship Value], banking_clients[value_quintile] = "Top 20%" ), _all )
+VAR _all6 = [Clients With All 6 Products %]
+RETURN
+    {s(f"<div style='position:relative;width:490px;height:292px;{FONT}color:#FFFFFF;'>"
+       + box(24, 24, "font-size:9.5px;line-height:13px;font-weight:700;letter-spacing:1.2px;color:#DCC994;white-space:nowrap;") + "KEY FINDING</div>"
+       + box(24, 44, "font-size:21px;line-height:27px;font-weight:700;", 440) + "Value is concentrated,<br>cross-sell is not the gap.</div>"
+       + box(24, 112, "font-size:34px;line-height:40px;font-weight:800;color:#D9BC7E;"))}
+        & FORMAT ( COALESCE ( _all6, 0 ), "0.0%" ) & "</div>"
+        & {s(box(24, 156, "font-size:11px;line-height:15px;color:#D9D4CB;", 190) + "of clients already hold all 6 products</div>"
+             + box(254, 112, "font-size:34px;line-height:40px;font-weight:800;color:#D9BC7E;"))}
+        & FORMAT ( COALESCE ( _top, 0 ), "0.0%" ) & "</div>"
+        & {s(box(254, 156, "font-size:11px;line-height:15px;color:#D9D4CB;", 200) + "of relationship value sits with the top 20% of clients</div>"
+             + box(24, 248, "font-size:10px;line-height:14px;color:#A8A196;white-space:nowrap;") + "Based on ")}
+        & FORMAT ( [Total Clients], "#,0" ) & " clients" & IF ( _segment = "All clients", "", " · " & _segment ) & ".</div></div>"
 """
 
 # Earlier helpers from this phase that the Deneb switch and pills made unnecessary (removed if present)

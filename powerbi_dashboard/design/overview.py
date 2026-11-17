@@ -420,6 +420,20 @@ def filter_not_highlight(page_id, page_obj):
 
 filter_not_highlight(OVERVIEW, ov)
 
+# ------------------------------------------------------------------ Wealth & Cross-sell page
+wl = Page(WEALTH)
+sidebar_and_header(wl, WEALTH)
+wl.add("title", 236, 49, 440, 34, textbox([("Wealth & Cross-sell", 25, INK, "Plus Jakarta Sans ExtraBold", False, "left")]))
+wl.add("subtitle", 236, 86, 520, 20, html("Wealth Subtitle HTML"))
+wl.add("kpi value", 236, 175, 322, 111, html("Wealth KPI Value HTML"))
+wl.add("kpi top share", 573, 175, 322, 111, html("Wealth KPI Top Share HTML"))
+wl.add("kpi products", 910, 175, 322, 111, html("Wealth KPI Products HTML"))
+wl.add("value by quintile", 236, 304, 490, 350, html("Value By Quintile HTML"))
+wl.add("tier value", 742, 304, 490, 350, html("Tier Value HTML"))
+wl.add("tier depth", 236, 670, 490, 292, html("Tier Depth HTML"))
+wl.add("finding", 742, 670, 490, 292, html("Wealth Finding HTML"))
+wl.write()
+
 # ------------------------------------------------------------------ Client data page (search + export)
 page_dir = PAGES / DATA_PAGE
 page_dir.mkdir(parents=True, exist_ok=True)

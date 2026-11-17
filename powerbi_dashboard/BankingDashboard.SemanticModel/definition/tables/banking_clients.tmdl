@@ -139,7 +139,7 @@ table banking_clients
 			            & IF ( [@n] = _max, "#C4A66A", "#E5D6AF" ) & "'/>",
 			        "", [Order], ASC )
 			RETURN
-			    "<div style='position:relative;width:322px;height:111px;font-family:Plus Jakarta Sans,Segoe UI,sans-serif;color:#17140F;'><div style='position:absolute;left:19px;top:24px;font-size:12.5px;line-height:16px;font-weight:500;color:#2F2B26;white-space:nowrap;'>Total relationship value</div><div style='position:absolute;left:70px;top:57px;font-size:27px;line-height:34px;font-weight:700;letter-spacing:-0.3px;white-space:nowrap;'>" & IF(_v >= 1000000000, FORMAT(_v / 1000000000, "0.00") & "bn", IF(_v >= 1000000, FORMAT(_v / 1000000, "0.00") & "M", IF(_v >= 1000, FORMAT(_v / 1000, "0") & "K", FORMAT(_v, "0")))) & "</div>"
+			    "<div style='position:relative;width:322px;height:111px;overflow:hidden;font-family:Plus Jakarta Sans,Segoe UI,sans-serif;color:#17140F;'><div style='position:absolute;left:19px;top:24px;font-size:12.5px;line-height:16px;font-weight:500;color:#2F2B26;white-space:nowrap;'>Total relationship value</div><div style='position:absolute;left:70px;top:57px;font-size:27px;line-height:34px;font-weight:700;letter-spacing:-0.3px;white-space:nowrap;'>" & IF(_v >= 1000000000, FORMAT(_v / 1000000000, "0.00") & "bn", IF(_v >= 1000000, FORMAT(_v / 1000000, "0.00") & "M", IF(_v >= 1000, FORMAT(_v / 1000, "0") & "K", FORMAT(_v, "0")))) & "</div>"
 			        & "<div style='position:absolute;left:176px;top:60px;font-size:11.5px;line-height:15px;font-weight:600;color:#3F6B4B;white-space:nowrap;'>" & FORMAT ( COALESCE ( _book, 0 ), "0%" ) & " of<br>book</div>"
 			        & "<svg style='position:absolute;left:232px;top:23px;' width='81' height='42' viewBox='0 0 81 42'>" & _bars & "</svg>"
 			        & "<div style='position:absolute;left:232px;top:68px;font-size:9px;line-height:13px;color:#6B665D;white-space:nowrap;'>Clients by year<br>joined, 1995–2021</div></div>"
@@ -162,7 +162,7 @@ table banking_clients
 			            & IF ( [@n] = _max, "#C4A66A", "#E5D6AF" ) & "'/>",
 			        "", [Order], ASC )
 			RETURN
-			    "<div style='position:relative;width:322px;height:111px;font-family:Plus Jakarta Sans,Segoe UI,sans-serif;color:#17140F;'><div style='position:absolute;left:19px;top:24px;font-size:12.5px;line-height:16px;font-weight:500;color:#2F2B26;white-space:nowrap;'>Clients</div><div style='position:absolute;left:70px;top:57px;font-size:27px;line-height:34px;font-weight:700;letter-spacing:-0.3px;white-space:nowrap;'>" & FORMAT ( _n, "#,0" ) & "</div>"
+			    "<div style='position:relative;width:322px;height:111px;overflow:hidden;font-family:Plus Jakarta Sans,Segoe UI,sans-serif;color:#17140F;'><div style='position:absolute;left:19px;top:24px;font-size:12.5px;line-height:16px;font-weight:500;color:#2F2B26;white-space:nowrap;'>Clients</div><div style='position:absolute;left:70px;top:57px;font-size:27px;line-height:34px;font-weight:700;letter-spacing:-0.3px;white-space:nowrap;'>" & FORMAT ( _n, "#,0" ) & "</div>"
 			        & "<div style='position:absolute;left:176px;top:60px;font-size:11.5px;line-height:15px;font-weight:600;color:#3F6B4B;white-space:nowrap;'>" & FORMAT ( COALESCE ( _jade, 0 ), "0%" ) & "<br>Jade</div>"
 			        & "<svg style='position:absolute;left:226px;top:24px;' width='66' height='42' viewBox='0 0 66 42'>" & _bars & "</svg>"
 			        & "<div style='position:absolute;left:214px;top:68px;font-size:9px;line-height:13px;color:#6B665D;white-space:nowrap;'>Jade · Silver · Gold ·<br>Plat.</div></div>"
@@ -180,7 +180,7 @@ table banking_clients
 			            & FORMAT ( 47.8 - DIVIDE ( [@n], _max ) * 36.8, "0.0" ) & "' r='3.4' fill='#C4A66A'/>",
 			        "", [Level], ASC )
 			RETURN
-			    "<div style='position:relative;width:322px;height:111px;font-family:Plus Jakarta Sans,Segoe UI,sans-serif;color:#17140F;'><div style='position:absolute;left:19px;top:24px;font-size:12.5px;line-height:16px;font-weight:500;color:#2F2B26;white-space:nowrap;'>Average risk weighting</div><div style='position:absolute;left:70px;top:57px;font-size:27px;line-height:34px;font-weight:700;letter-spacing:-0.3px;white-space:nowrap;'>" & FORMAT ( _avg, "0.00" ) & "</div>"
+			    "<div style='position:relative;width:322px;height:111px;overflow:hidden;font-family:Plus Jakarta Sans,Segoe UI,sans-serif;color:#17140F;'><div style='position:absolute;left:19px;top:24px;font-size:12.5px;line-height:16px;font-weight:500;color:#2F2B26;white-space:nowrap;'>Average risk weighting</div><div style='position:absolute;left:70px;top:57px;font-size:27px;line-height:34px;font-weight:700;letter-spacing:-0.3px;white-space:nowrap;'>" & FORMAT ( _avg, "0.00" ) & "</div>"
 			        & "<div style='position:absolute;left:147px;top:67px;font-size:11px;line-height:15px;font-weight:500;color:#6B665D;white-space:nowrap;'>of 5</div>"
 			        & "<svg style='position:absolute;left:198px;top:26px;' width='100' height='52' viewBox='0 0 100 52'>" & _dots & "</svg>"
 			        & "<div style='position:absolute;left:200px;top:82px;font-size:9px;line-height:13px;color:#6B665D;white-space:nowrap;'>Clients at risk level 1 → 5</div></div>"
@@ -302,6 +302,163 @@ table banking_clients
 			        & "Income r = " & FORMAT ( _rIncome, _fmt ) & ", age r = " & _ageTxt & " for "
 			        & IF ( _segment = "All clients", "all clients", _segment ) & ".</div></div>"
 		lineageTag: 0239b64d-b98b-5267-8f05-fea0215e8ab8
+
+	measure 'Wealth Subtitle HTML' =
+			-- Wealth page subtitle (follows the client-type pills)
+			"<div style='font-family:Plus Jakarta Sans,Segoe UI,sans-serif;font-size:12.5px;line-height:16px;color:#5E5A52;white-space:nowrap;'>"
+			    & FORMAT ( [Total Clients], "#,0" ) & " clients · where value sits and how deep cross-sell goes</div>"
+		lineageTag: f78d0a17-ff11-5528-89bc-e972d7e2b35c
+
+	measure 'Wealth KPI Value HTML' =
+			-- KPI card: average relationship value, the median, and the average per loyalty tier
+			VAR _avg = [Avg Relationship Value]
+			VAR _median = MEDIAN ( banking_clients[total_relationship_value] )
+			VAR _vals = ADDCOLUMNS ( DATATABLE ( "Tier", STRING, "Order", INTEGER, { { "Jade", 1 }, { "Silver", 2 }, { "Gold", 3 }, { "Platinum", 4 } } ), "@n", VAR _t = [Tier] RETURN CALCULATE ( [Avg Relationship Value], banking_clients[loyalty_classification] = _t ) )
+			VAR _max = MAXX ( _vals, [@n] )
+			VAR _bars = CONCATENATEX ( _vals,
+			        VAR _h = ROUND ( DIVIDE ( [@n], _max ) * 42, 1 )
+			        RETURN "<rect x='" & FORMAT ( ( [Order] - 1 ) * 18, "0.0" ) & "' y='" & FORMAT ( 42 - _h, "0.0" )
+			            & "' width='12' height='" & FORMAT ( _h, "0.0" ) & "' rx='2' fill='"
+			            & IF ( [@n] = _max, "#C4A66A", "#E5D6AF" ) & "'/>",
+			        "", [Order], ASC )
+			RETURN
+			    "<div style='position:relative;width:322px;height:111px;overflow:hidden;font-family:Plus Jakarta Sans,Segoe UI,sans-serif;color:#17140F;'><div style='position:absolute;left:19px;top:24px;font-size:12.5px;line-height:16px;font-weight:500;color:#2F2B26;white-space:nowrap;'>Average relationship value</div><div style='position:absolute;left:70px;top:57px;font-size:27px;line-height:34px;font-weight:700;letter-spacing:-0.3px;white-space:nowrap;'>" & IF(_avg >= 1000000000, FORMAT(_avg / 1000000000, "0.00") & "bn", IF(_avg >= 1000000, FORMAT(_avg / 1000000, "0.00") & "M", IF(_avg >= 1000, FORMAT(_avg / 1000, "0") & "K", FORMAT(_avg, "0")))) & "</div>"
+			        & "<div style='position:absolute;left:160px;top:60px;font-size:11px;line-height:15px;font-weight:600;color:#6B665D;white-space:nowrap;'>" & "median<br>" & IF(_median >= 1000000000, FORMAT(_median / 1000000000, "0.00") & "bn", IF(_median >= 1000000, FORMAT(_median / 1000000, "0.00") & "M", IF(_median >= 1000, FORMAT(_median / 1000, "0") & "K", FORMAT(_median, "0")))) & "</div>"
+			        & "<svg style='position:absolute;left:236px;top:24px;' width='66' height='42' viewBox='0 0 66 42'>" & _bars & "</svg>"
+			        & "<div style='position:absolute;left:236px;top:68px;font-size:9px;line-height:13px;color:#6B665D;white-space:nowrap;'>Avg value by tier,<br>Jade → Platinum</div></div>"
+		lineageTag: a87a5d2e-86d9-5c0b-8ee6-ac0f379e1dcf
+
+	measure 'Wealth KPI Top Share HTML' =
+			-- KPI card: share of value held by the top 20%, how many times the bottom 20%, share per quintile
+			VAR _all = CALCULATE ( [Total Relationship Value], REMOVEFILTERS ( banking_clients[value_quintile] ) )
+			VAR _vals = ADDCOLUMNS ( DATATABLE ( "Quintile", STRING, "Label", STRING, "Order", INTEGER, { { "Top 20%", "Top 20%", 1 }, { "4th", "4th", 2 }, { "3rd", "3rd", 3 }, { "2nd", "2nd", 4 }, { "Bottom 20%", "Bottom 20%", 5 } } ), "@n", VAR _q = [Quintile] RETURN DIVIDE ( CALCULATE ( [Total Relationship Value], banking_clients[value_quintile] = _q ), _all ) )
+			VAR _max = MAXX ( _vals, [@n] )
+			VAR _top = MAXX ( FILTER ( _vals, [Order] = 1 ), [@n] )
+			VAR _bottom = MAXX ( FILTER ( _vals, [Order] = 5 ), [@n] )
+			VAR _bars = CONCATENATEX ( _vals,
+			        VAR _h = ROUND ( DIVIDE ( [@n], _max ) * 42, 1 )
+			        RETURN "<rect x='" & FORMAT ( ( [Order] - 1 ) * 15.5, "0.0" ) & "' y='" & FORMAT ( 42 - _h, "0.0" )
+			            & "' width='11' height='" & FORMAT ( _h, "0.0" ) & "' rx='2' fill='"
+			            & IF ( [@n] = _max, "#C4A66A", "#E5D6AF" ) & "'/>",
+			        "", [Order], ASC )
+			RETURN
+			    "<div style='position:relative;width:322px;height:111px;overflow:hidden;font-family:Plus Jakarta Sans,Segoe UI,sans-serif;color:#17140F;'><div style='position:absolute;left:19px;top:24px;font-size:12.5px;line-height:16px;font-weight:500;color:#2F2B26;white-space:nowrap;'>Top 20% share of value</div><div style='position:absolute;left:70px;top:57px;font-size:27px;line-height:34px;font-weight:700;letter-spacing:-0.3px;white-space:nowrap;'>" & FORMAT ( COALESCE ( _top, 0 ), "0.0%" ) & "</div>"
+			        & "<div style='position:absolute;left:166px;top:60px;font-size:11px;line-height:15px;font-weight:600;color:#3F6B4B;white-space:nowrap;'>" & IF ( ISBLANK ( _bottom ), "", FORMAT ( DIVIDE ( _top, _bottom ), "0.0" ) & "×<br>bottom 20%" ) & "</div>"
+			        & "<svg style='position:absolute;left:244px;top:24px;' width='73' height='42' viewBox='0 0 73 42'>" & _bars & "</svg>"
+			        & "<div style='position:absolute;left:244px;top:68px;font-size:9px;line-height:13px;color:#6B665D;white-space:nowrap;'>Share by<br>quintile</div></div>"
+		lineageTag: 04bc6451-9f2c-50a0-8c1d-2d27a578da41
+
+	measure 'Wealth KPI Products HTML' =
+			-- KPI card: average products held, share holding all 6, clients by number of products held
+			VAR _avg = [Avg Products Held]
+			VAR _all6 = [Clients With All 6 Products %]
+			VAR _vals = ADDCOLUMNS ( SELECTCOLUMNS ( GENERATESERIES ( 1, 6, 1 ), "Order", [Value] ), "@n",
+			    VAR _p = [Order] RETURN CALCULATE ( [Total Clients], banking_clients[product_count] = _p ) )
+			VAR _max = MAXX ( _vals, [@n] )
+			VAR _bars = CONCATENATEX ( _vals,
+			        VAR _h = ROUND ( DIVIDE ( [@n], _max ) * 42, 1 )
+			        RETURN "<rect x='" & FORMAT ( ( [Order] - 1 ) * 12.5, "0.0" ) & "' y='" & FORMAT ( 42 - _h, "0.0" )
+			            & "' width='9' height='" & FORMAT ( _h, "0.0" ) & "' rx='2' fill='"
+			            & IF ( [@n] = _max, "#C4A66A", "#E5D6AF" ) & "'/>",
+			        "", [Order], ASC )
+			RETURN
+			    "<div style='position:relative;width:322px;height:111px;overflow:hidden;font-family:Plus Jakarta Sans,Segoe UI,sans-serif;color:#17140F;'><div style='position:absolute;left:19px;top:24px;font-size:12.5px;line-height:16px;font-weight:500;color:#2F2B26;white-space:nowrap;'>Average products held</div><div style='position:absolute;left:70px;top:57px;font-size:27px;line-height:34px;font-weight:700;letter-spacing:-0.3px;white-space:nowrap;'>" & FORMAT ( _avg, "0.00" ) & "</div>"
+			        & "<div style='position:absolute;left:166px;top:60px;font-size:11px;line-height:15px;font-weight:600;color:#3F6B4B;white-space:nowrap;'>" & FORMAT ( COALESCE ( _all6, 0 ), "0.0%" ) & "<br>hold all 6</div>"
+			        & "<svg style='position:absolute;left:244px;top:24px;' width='72' height='42' viewBox='0 0 72 42'>" & _bars & "</svg>"
+			        & "<div style='position:absolute;left:244px;top:68px;font-size:9px;line-height:13px;color:#6B665D;white-space:nowrap;'>Clients by<br>products, 1 → 6</div></div>"
+		lineageTag: 79ba5b65-a6fa-5d32-ba6c-23f4fef73a6e
+
+	measure 'Value By Quintile HTML' =
+			-- Left top panel: share of relationship value per client quintile, as columns (top 20% in black)
+			VAR _all = CALCULATE ( [Total Relationship Value], REMOVEFILTERS ( banking_clients[value_quintile] ) )
+			VAR _vals = ADDCOLUMNS ( DATATABLE ( "Quintile", STRING, "Label", STRING, "Order", INTEGER, { { "Top 20%", "Top 20%", 1 }, { "4th", "4th", 2 }, { "3rd", "3rd", 3 }, { "2nd", "2nd", 4 }, { "Bottom 20%", "Bottom 20%", 5 } } ), "@n", VAR _q = [Quintile] RETURN DIVIDE ( CALCULATE ( [Total Relationship Value], banking_clients[value_quintile] = _q ), _all ) )
+			VAR _max = MAXX ( _vals, [@n] )
+			VAR _top = MAXX ( FILTER ( _vals, [Order] = 1 ), [@n] )
+			VAR _bottom = MAXX ( FILTER ( _vals, [Order] = 5 ), [@n] )
+			VAR _cols =
+			    CONCATENATEX ( _vals,
+			        VAR _x = 4 + ( [Order] - 1 ) * 94
+			        VAR _h = ROUND ( DIVIDE ( [@n], _max ) * 160, 1 )
+			        RETURN
+			            "<rect x='" & _x & "' y='" & FORMAT ( 196 - _h, "0.0" ) & "' width='56' height='" & FORMAT ( _h, "0.0" )
+			                & "' rx='7' fill='" & IF ( [Order] = 1, "#17140F", "#C4A66A" ) & "'/>"
+			            & "<text x='" & ( _x + 28 ) & "' y='" & FORMAT ( 196 - _h - 9, "0.0" ) & "' text-anchor='middle' font-family='Plus Jakarta Sans, Segoe UI, sans-serif' font-size='12.5' font-weight='700' fill='#17140F'>"
+			                & FORMAT ( COALESCE ( [@n], 0 ), "0.0%" ) & "</text>"
+			            & "<text x='" & ( _x + 28 ) & "' y='218' text-anchor='middle' font-family='Plus Jakarta Sans, Segoe UI, sans-serif' font-size='11' fill='#2F2B26'>" & [Label] & "</text>",
+			        "", [Order], ASC )
+			RETURN
+			    "<div style='position:relative;width:490px;height:350px;font-family:Plus Jakarta Sans,Segoe UI,sans-serif;color:#17140F;'><div style='position:absolute;left:20px;top:18px;font-size:16.5px;line-height:22px;font-weight:800;'>Where the value sits</div><div style='position:absolute;left:20px;top:41px;font-size:10.5px;line-height:14px;color:#6B665D;white-space:nowrap;'>Share of total relationship value by client quintile</div><div style='position:absolute;right:20px;top:20px;padding:0 12px;height:25px;line-height:25px;border-radius:12.5px;background:#FFFFFF;font-size:10.5px;font-weight:700;white-space:nowrap;'>Top 20% = "
+			        & IF ( ISBLANK ( _bottom ), "–", FORMAT ( DIVIDE ( _top, _bottom ), "0.0" ) ) & "× bottom 20%</div>"
+			        & "<svg style='position:absolute;left:20px;top:78px;' width='450' height='230' viewBox='0 0 450 230'>"
+			        & "<line x1='0' y1='196.5' x2='450' y2='196.5' stroke='#E2DCD0' stroke-width='1'/>" & _cols & "</svg>"
+			        & "<div style='position:absolute;left:20px;top:318px;font-size:10px;line-height:14px;color:#6B665D;white-space:nowrap;'>Quintiles rank all 3,000 clients by relationship value, so each fifth is 600 clients.</div></div>"
+		lineageTag: 6ba0b300-3405-5a7a-b404-352a66d46efb
+
+	measure 'Tier Value HTML' =
+			-- Gold panel: average relationship value per loyalty tier; the title checks the data before claiming it
+			VAR _vals = ADDCOLUMNS ( DATATABLE ( "Tier", STRING, "Order", INTEGER, { { "Jade", 1 }, { "Silver", 2 }, { "Gold", 3 }, { "Platinum", 4 } } ), "@n", VAR _t = [Tier] RETURN CALCULATE ( [Avg Relationship Value], banking_clients[loyalty_classification] = _t ) )
+			VAR _max = MAXX ( _vals, [@n] )
+			VAR _plat = MAXX ( FILTER ( _vals, [Tier] = "Platinum" ), [@n] )
+			VAR _jade = MAXX ( FILTER ( _vals, [Tier] = "Jade" ), [@n] )
+			VAR _bestOther = MAXX ( FILTER ( _vals, [Tier] <> "Platinum" ), [@n] )
+			VAR _title = IF ( _plat <= _bestOther, "Higher tiers don't hold more value", "Platinum clients hold the most value" )
+			VAR _rows =
+			    CONCATENATEX ( _vals,
+			        VAR _top = 152 + ( [Order] - 1 ) * 44
+			        VAR _w = ROUND ( DIVIDE ( [@n], _max ) * 230, 0 )
+			        RETURN
+			            "<div style='position:absolute;left:19px;top:" & _top & "px;width:452px;height:34px;border-radius:13px;background:#FFFFFF;'>"
+			            & "<div style='position:absolute;left:16px;top:9px;font-size:12px;line-height:16px;font-weight:600;'>" & [Tier] & "</div>"
+			            & "<div style='position:absolute;left:110px;top:13px;width:230px;height:8px;border-radius:4px;background:#EFE9DD;overflow:hidden;'>"
+			            & "<div style='height:8px;border-radius:4px;background:#17140F;width:" & _w & "px;'></div></div>"
+			            & "<div style='position:absolute;right:16px;top:9px;font-size:12px;line-height:16px;font-weight:700;'>" & IF([@n] >= 1000000000, FORMAT([@n] / 1000000000, "0.00") & "bn", IF([@n] >= 1000000, FORMAT([@n] / 1000000, "0.00") & "M", IF([@n] >= 1000, FORMAT([@n] / 1000, "0") & "K", FORMAT([@n], "0")))) & "</div></div>",
+			        "", [Order], ASC )
+			RETURN
+			    "<div style='position:relative;width:490px;height:350px;font-family:Plus Jakarta Sans,Segoe UI,sans-serif;color:#17140F;'><div style='position:absolute;left:19px;top:20px;font-size:10.5px;line-height:14px;font-weight:700;letter-spacing:1.6px;white-space:nowrap;'>LOYALTY TIERS</div><div style='position:absolute;left:19px;top:42px;width:445px;'><div style='font-size:21px;line-height:26px;font-weight:800;'>" & _title & "</div>"
+			        & "<div style='margin-top:8px;font-size:11.5px;line-height:15px;font-weight:500;'>Average relationship value per client. Platinum clients average "
+			        & IF(_plat >= 1000000000, FORMAT(_plat / 1000000000, "0.00") & "bn", IF(_plat >= 1000000, FORMAT(_plat / 1000000, "0.00") & "M", IF(_plat >= 1000, FORMAT(_plat / 1000, "0") & "K", FORMAT(_plat, "0")))) & ", Jade clients " & IF(_jade >= 1000000000, FORMAT(_jade / 1000000000, "0.00") & "bn", IF(_jade >= 1000000, FORMAT(_jade / 1000000, "0.00") & "M", IF(_jade >= 1000, FORMAT(_jade / 1000, "0") & "K", FORMAT(_jade, "0")))) & ".</div></div>"
+			        & _rows & "</div>"
+		lineageTag: 8eb8484c-4451-5672-be0f-ff7d51376312
+
+	measure 'Tier Depth HTML' =
+			-- Left bottom panel: cross-sell depth per loyalty tier (products per 100K income, average products, share holding all 6)
+			VAR _vals =
+			    ADDCOLUMNS ( DATATABLE ( "Tier", STRING, "Order", INTEGER, { { "Jade", 1 }, { "Silver", 2 }, { "Gold", 3 }, { "Platinum", 4 } } ),
+			        "@p100", VAR _t = [Tier] RETURN CALCULATE ( [Avg Products per 100K Income], banking_clients[loyalty_classification] = _t ),
+			        "@prod", VAR _t = [Tier] RETURN CALCULATE ( [Avg Products Held], banking_clients[loyalty_classification] = _t ),
+			        "@all6", VAR _t = [Tier] RETURN CALCULATE ( [Clients With All 6 Products %], banking_clients[loyalty_classification] = _t ) )
+			VAR _cards =
+			    CONCATENATEX ( _vals,
+			        VAR _left = 20 + ( [Order] - 1 ) * 115
+			        RETURN
+			            "<div style='position:absolute;left:" & _left & "px;top:74px;width:103px;height:150px;border-radius:12px;background:#FFFFFF;text-align:center;'>"
+			            & "<div style='margin-top:16px;font-size:12px;line-height:16px;font-weight:700;'>" & [Tier] & "</div>"
+			            & "<div style='margin-top:10px;font-size:25px;line-height:30px;font-weight:800;'>" & FORMAT ( [@p100], "0.00" ) & "</div>"
+			            & "<div style='font-size:9.5px;line-height:13px;color:#6B665D;'>products per<br>100K income</div>"
+			            & "<div style='margin:10px auto 0;width:60px;height:1px;background:#EAE4D8;'></div>"
+			            & "<div style='margin-top:9px;font-size:10px;line-height:14px;color:#2F2B26;'>avg " & FORMAT ( [@prod], "0.00" ) & " products</div>"
+			            & "<div style='font-size:10px;line-height:14px;color:#6B665D;'>" & FORMAT ( COALESCE ( [@all6], 0 ), "0.0%" ) & " hold all 6</div></div>",
+			        "", [Order], ASC )
+			RETURN
+			    "<div style='position:relative;width:490px;height:292px;font-family:Plus Jakarta Sans,Segoe UI,sans-serif;color:#17140F;'><div style='position:absolute;left:20px;top:18px;font-size:16.5px;line-height:22px;font-weight:800;'>Cross-sell depth by tier</div><div style='position:absolute;left:20px;top:41px;font-size:10.5px;line-height:14px;color:#6B665D;white-space:nowrap;'>Products held per 100K of estimated income, by loyalty tier</div>"
+			        & _cards
+			        & "<div style='position:absolute;left:20px;top:240px;width:450px;font-size:10.5px;line-height:15px;color:#4A463F;'>Every tier holds close to 6 products, so cross-sell depth barely changes from tier to tier.</div></div>"
+		lineageTag: be45870d-22ae-52a9-ab05-39c38282e15c
+
+	measure 'Wealth Finding HTML' =
+			-- Dark panel: key finding with live numbers for the current selection
+			VAR _segment = IF ( ISFILTERED ( banking_clients[banking_relationship] ), IF ( HASONEVALUE ( banking_clients[banking_relationship] ), VALUES ( banking_clients[banking_relationship] ) & " clients", "Selected clients" ), "All clients" )
+			VAR _all = CALCULATE ( [Total Relationship Value], REMOVEFILTERS ( banking_clients[value_quintile] ) )
+			VAR _top = DIVIDE ( CALCULATE ( [Total Relationship Value], banking_clients[value_quintile] = "Top 20%" ), _all )
+			VAR _all6 = [Clients With All 6 Products %]
+			RETURN
+			    "<div style='position:relative;width:490px;height:292px;font-family:Plus Jakarta Sans,Segoe UI,sans-serif;color:#FFFFFF;'><div style='position:absolute;left:24px;top:24px;font-size:9.5px;line-height:13px;font-weight:700;letter-spacing:1.2px;color:#DCC994;white-space:nowrap;'>KEY FINDING</div><div style='position:absolute;left:24px;top:44px;width:440px;font-size:21px;line-height:27px;font-weight:700;'>Value is concentrated,<br>cross-sell is not the gap.</div><div style='position:absolute;left:24px;top:112px;font-size:34px;line-height:40px;font-weight:800;color:#D9BC7E;'>"
+			        & FORMAT ( COALESCE ( _all6, 0 ), "0.0%" ) & "</div>"
+			        & "<div style='position:absolute;left:24px;top:156px;width:190px;font-size:11px;line-height:15px;color:#D9D4CB;'>of clients already hold all 6 products</div><div style='position:absolute;left:254px;top:112px;font-size:34px;line-height:40px;font-weight:800;color:#D9BC7E;'>"
+			        & FORMAT ( COALESCE ( _top, 0 ), "0.0%" ) & "</div>"
+			        & "<div style='position:absolute;left:254px;top:156px;width:200px;font-size:11px;line-height:15px;color:#D9D4CB;'>of relationship value sits with the top 20% of clients</div><div style='position:absolute;left:24px;top:248px;font-size:10px;line-height:14px;color:#A8A196;white-space:nowrap;'>Based on "
+			        & FORMAT ( [Total Clients], "#,0" ) & " clients" & IF ( _segment = "All clients", "", " · " & _segment ) & ".</div></div>"
+		lineageTag: 1712d1d0-a5ea-50df-b445-b2842de4273f
 
 	column client_row_id
 		dataType: int64

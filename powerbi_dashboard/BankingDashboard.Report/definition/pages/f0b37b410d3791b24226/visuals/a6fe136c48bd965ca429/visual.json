@@ -28,7 +28,6 @@
               },
               "queryRef": "banking_clients.name",
               "nativeQueryRef": "name",
-              "active": true,
               "displayName": "Client"
             }
           ]

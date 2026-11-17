@@ -130,60 +130,6 @@
             }
           }
         }
-      ],
-      "stateManagement": [
-        {
-          "properties": {
-            "viewportHeight": {
-              "expr": {
-                "Literal": {
-                  "Value": "43D"
-                }
-              }
-            },
-            "viewportWidth": {
-              "expr": {
-                "Literal": {
-                  "Value": "453D"
-                }
-              }
-            },
-            "supportFieldConfiguration": {
-              "expr": {
-                "Literal": {
-                  "Value": "'{\"banking_relationship\":{\"highlight\":false,\"highlightStatus\":false,\"highlightComparator\":false,\"format\":false,\"formatted\":false,\"names\":false},\"Relationship Order\":{\"highlight\":false,\"highlightStatus\":false,\"highlightComparator\":false,\"format\":false,\"formatted\":false,\"names\":false},\"Total Clients\":{\"highlight\":false,\"highlightStatus\":false,\"highlightComparator\":false,\"format\":true,\"formatted\":true,\"names\":false}}'"
-                }
-              }
-            },
-            "denebMetaVersion": {
-              "expr": {
-                "Literal": {
-                  "Value": "'2'"
-                }
-              }
-            },
-            "consolidateFieldParameters": {
-              "expr": {
-                "Literal": {
-                  "Value": "false"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "developer": [
-        {
-          "properties": {
-            "version": {
-              "expr": {
-                "Literal": {
-                  "Value": "'2.0.1.0'"
-                }
-              }
-            }
-          }
-        }
       ]
     },
     "visualContainerObjects": {
